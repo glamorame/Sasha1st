@@ -1,0 +1,2453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <title>English Trainer A0+: Словарь & Past Continuous</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow-x: hidden;
+            max-width: 100vw;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+        }
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+        /* Оптимизация тапов для мобильных экранов */
+        button, select, input, [role="button"] {
+            touch-action: manipulation;
+        }
+        /* Предотвращение зума на iOS Safari при фокусе на input */
+        input[type="text"] {
+            font-size: 16px !important;
+        }
+        /* Анимация переворота карточки (3D Flip с поддержкой iOS Safari) */
+        .perspective-1000 {
+            perspective: 1000px;
+            -webkit-perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+            will-change: transform;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+        .card-back-face {
+            transform: rotateY(180deg) translateZ(1px);
+            -webkit-transform: rotateY(180deg) translateZ(1px);
+        }
+        /* Анимация звуковой волны при озвучке */
+        @keyframes soundWave {
+            0%, 100% { transform: scaleY(0.4); }
+            50% { transform: scaleY(1); }
+        }
+        .speaking-indicator .bar {
+            display: inline-block;
+            width: 3px;
+            height: 12px;
+            background-color: currentColor;
+            border-radius: 2px;
+            animation: soundWave 0.7s infinite ease-in-out;
+        }
+        .speaking-indicator .bar:nth-child(2) { animation-delay: 0.15s; }
+        .speaking-indicator .bar:nth-child(3) { animation-delay: 0.3s; }
+        /* Плавное появление вкладок */
+        .fade-in {
+            animation: fadeIn 0.28s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Кастомный скроллбар для вкладок на мобильных */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Нижняя панель навигации на мобильных с учетом safe-area */
+        .mobile-bottom-nav {
+            padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+        }
+        /* Анимация праздничного баннера похвалы для Sasha */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .celebrate-pop {
+            animation: popIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+    </style>
+</head>
+<body class="flex flex-col bg-slate-50 text-slate-800 selection:bg-indigo-100 selection:text-indigo-800">
+
+    <!-- Праздничный баннер похвалы при успешном прохождении секции -->
+    <div id="sashaPraiseBanner" class="hidden fixed inset-x-0 top-16 sm:top-20 z-50 px-3 sm:px-6 pointer-events-none">
+        <div class="max-w-xl mx-auto pointer-events-auto celebrate-pop bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 text-white rounded-2xl shadow-2xl border-2 border-white/60 p-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center text-2xl shrink-0">
+                    🌟
+                </div>
+                <div>
+                    <div id="sashaPraiseTitle" class="text-base sm:text-lg font-extrabold tracking-tight">
+                        Good job, Sasha!
+                    </div>
+                    <p id="sashaPraiseSub" class="text-xs sm:text-sm text-emerald-50 font-medium">
+                        Отличная работа, Саша! Раздел выполнен!
+                    </p>
+                </div>
+            </div>
+            <button onclick="hideSashaPraise()" class="min-w-[38px] min-h-[38px] rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-sm flex items-center justify-center shrink-0 transition" aria-label="Закрыть поздравление">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- Верхняя навигационная панель -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between py-2.5 sm:py-3 gap-2">
+                <!-- Логотип -->
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-extrabold text-base sm:text-lg shadow-md shrink-0">
+                        A0+
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">LinguaPractice • Sasha</h1>
+                        <p class="text-[11px] sm:text-xs text-slate-500">Уровень A0+ • 89 слов + Past Continuous</p>
+                    </div>
+                </div>
+
+                <!-- Панель настроек озвучки (Акцент US/UK + Скорость 1.0x/0.8x) -->
+                <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200/70">
+                    <button id="btnAccentToggle" onclick="toggleVoiceAccent()" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-white text-slate-800 text-xs font-bold shadow-sm hover:bg-indigo-50 transition flex items-center gap-1" title="Переключить акцент озвучки">
+                        🇺🇸 US
+                    </button>
+                    <button id="btnRateToggle" onclick="toggleVoiceRate()" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-white text-slate-800 text-xs font-bold shadow-sm hover:bg-indigo-50 transition" title="Скорость речи">
+                        1.0x
+                    </button>
+                    <span id="ttsStatusWave" class="hidden speaking-indicator text-indigo-600 px-1.5 items-center gap-0.5" aria-hidden="true">
+                        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+                    </span>
+                </div>
+
+                <!-- Десктопная навигация по разделам (скрыта на узких мобильных, где работает нижний бар) -->
+                <nav class="hidden md:flex gap-1.5 bg-slate-100 p-1 rounded-xl" id="desktopNav">
+                    <button onclick="switchTab('vocab')" data-tab="vocab" class="nav-btn active flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all bg-white text-indigo-600 shadow-sm">
+                        <span>📚</span> Словарь
+                    </button>
+                    <button onclick="switchTab('wordQuiz')" data-tab="wordQuiz" class="nav-btn flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:text-slate-900">
+                        <span>🎯</span> Слова A0+
+                    </button>
+                    <button onclick="switchTab('grammar')" data-tab="grammar" class="nav-btn flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:text-slate-900">
+                        <span>⏳</span> Past Continuous
+                    </button>
+                    <button onclick="switchTab('exam')" data-tab="exam" class="nav-btn flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:text-slate-900">
+                        <span>🏆</span> Итог (<span id="desktopProgressBadge">0%</span>)
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Нижняя закрепленная навигационная панель для смартфонов (Mobile Bottom Tab Bar) -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_12px_rgba(0,0,0,0.04)] mobile-bottom-nav px-1.5 pt-1.5" id="mobileBottomNav">
+        <div class="grid grid-cols-4 gap-1 max-w-md mx-auto">
+            <button onclick="switchTab('vocab')" data-tab="vocab" class="mobile-nav-btn min-h-[48px] flex flex-col items-center justify-center rounded-xl py-1 px-1 text-indigo-600 bg-indigo-50/80 font-bold transition">
+                <span class="text-base leading-none mb-1">📚</span>
+                <span class="text-[11px] leading-none truncate max-w-full">Словарь</span>
+            </button>
+            <button onclick="switchTab('wordQuiz')" data-tab="wordQuiz" class="mobile-nav-btn min-h-[48px] flex flex-col items-center justify-center rounded-xl py-1 px-1 text-slate-500 font-semibold transition">
+                <span class="text-base leading-none mb-1">🎯</span>
+                <span class="text-[11px] leading-none truncate max-w-full">Слова</span>
+            </button>
+            <button onclick="switchTab('grammar')" data-tab="grammar" class="mobile-nav-btn min-h-[48px] flex flex-col items-center justify-center rounded-xl py-1 px-1 text-slate-500 font-semibold transition">
+                <span class="text-base leading-none mb-1">⏳</span>
+                <span class="text-[11px] leading-none truncate max-w-full">Past Cont.</span>
+            </button>
+            <button onclick="switchTab('exam')" data-tab="exam" class="mobile-nav-btn min-h-[48px] flex flex-col items-center justify-center rounded-xl py-1 px-1 text-slate-500 font-semibold transition relative">
+                <span class="text-base leading-none mb-1">🏆</span>
+                <span class="text-[11px] leading-none truncate max-w-full">Итог <span id="mobileProgressBadge">0%</span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+
+        <!-- =================================================================== -->
+        <!-- РАЗДЕЛ 1: СЛОВАРЬ И КАРТОЧКИ (FLASHCARDS)                           -->
+        <!-- =================================================================== -->
+        <section id="tab-vocab" class="tab-content fade-in space-y-5 sm:space-y-6">
+            <!-- Панель выбора модуля и режима -->
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div>
+                        <span class="inline-block px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold mb-1">Уровень A0+ • Простой старт</span>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900">Словарь и карточки для Саши</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Нажми 🔊 чтобы послушать, и нажми на карточку, чтобы открыть перевод.</p>
+                    </div>
+                    <!-- Переключатель вида: Карточки / Список -->
+                    <div class="grid grid-cols-2 sm:flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
+                        <button id="btnViewCards" onclick="setVocabView('cards')" class="min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-600 shadow-sm transition">
+                            🗂️ Карточки
+                        </button>
+                        <button id="btnViewList" onclick="setVocabView('list')" class="min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition">
+                            📋 Список слов
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Фильтр модулей -->
+                <div class="flex flex-wrap gap-2 pt-3 border-t border-slate-100" id="moduleFilters">
+                    <!-- Генерируется через JS -->
+                </div>
+            </div>
+
+            <!-- Режим 1A: Интерактивные карточки -->
+            <div id="vocabCardsContainer" class="space-y-4 sm:space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-sm">
+                    <button onclick="toggleCardDirection()" id="btnCardDir" class="min-h-[40px] px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold hover:bg-indigo-100 transition">
+                        🇬🇧 EN ➔ 🇷🇺 RU
+                    </button>
+                    <div class="text-xs sm:text-sm font-bold text-slate-700" id="cardCounter">
+                        Карточка 1 из 19
+                    </div>
+                    <button onclick="shuffleCards()" class="min-h-[40px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                        🔀 Перемешать
+                    </button>
+                </div>
+
+                <!-- Сама 3D-карточка -->
+                <div class="max-w-xl mx-auto">
+                    <div class="perspective-1000 w-full h-72 sm:h-80 cursor-pointer select-none" onclick="flipCard()">
+                        <div id="flashcardInner" class="relative w-full h-full transform-style-3d shadow-lg rounded-3xl">
+                            <!-- Лицевая сторона -->
+                            <div class="absolute inset-0 backface-hidden bg-white border-2 border-slate-200 rounded-3xl p-5 sm:p-8 flex flex-col justify-between">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span id="cardModuleBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
+                                        Набор 5
+                                    </span>
+                                    <span id="cardStatusBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                                        Не изучено
+                                    </span>
+                                </div>
+                                <div class="text-center my-auto space-y-2.5 px-2">
+                                    <h3 id="cardFrontText" class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight break-words">
+                                        Laugh
+                                    </h3>
+                                    <p id="cardFrontSub" class="text-xs sm:text-sm font-medium text-slate-400">
+                                        [lɑːf] • Нажмите, чтобы увидеть перевод
+                                    </p>
+                                </div>
+                                <div class="flex items-center justify-between pt-2">
+                                    <button type="button" onclick="event.stopPropagation(); speakCurrentCard();" class="min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 font-semibold text-sm transition">
+                                        🔊 Озвучить
+                                    </button>
+                                    <span class="text-xs text-slate-400 flex items-center gap-1">
+                                        🔄 Перевернуть
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Обратная сторона -->
+                            <div class="absolute inset-0 backface-hidden card-back-face bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-3xl p-5 sm:p-8 flex flex-col justify-between shadow-xl">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white">
+                                        Перевод и значение
+                                    </span>
+                                    <button type="button" onclick="event.stopPropagation(); speakCurrentCard();" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/20 hover:bg-white/30 active:bg-white/40 text-white transition" title="Озвучить английское слово">
+                                        🔊
+                                    </button>
+                                </div>
+                                <div class="text-center my-auto space-y-2 px-2">
+                                    <h3 id="cardBackText" class="text-2xl sm:text-4xl font-extrabold tracking-tight break-words">
+                                        смеяться
+                                    </h3>
+                                    <p id="cardBackSub" class="text-sm sm:text-base text-indigo-100 font-medium">
+                                        Laugh [lɑːf]
+                                    </p>
+                                </div>
+                                <div class="text-center text-xs text-indigo-200">
+                                    Коснитесь карточки, чтобы вернуть
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки управления карточкой (крупные зоны касания >= 48px) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4 sm:mt-5">
+                        <button onclick="prevCard()" class="min-h-[48px] p-3 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-semibold text-sm shadow-sm transition">
+                            ⬅️ Назад
+                        </button>
+                        <button onclick="markCardStatus('review')" class="min-h-[48px] p-3 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 active:bg-amber-200 text-amber-800 font-semibold text-sm shadow-sm transition">
+                            🔁 Повторю
+                        </button>
+                        <button onclick="markCardStatus('known')" class="min-h-[48px] p-3 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-800 font-semibold text-sm shadow-sm transition">
+                            ✅ Знаю!
+                        </button>
+                        <button onclick="nextCard()" class="min-h-[48px] p-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm shadow-sm transition">
+                            Дальше ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Режим 1B: Полный список слов -->
+            <div id="vocabListContainer" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-3.5 sm:p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+                    <input type="text" id="vocabSearchInput" oninput="renderWordList()" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="🔍 Поиск слова (EN или RU)..." class="w-full sm:w-80 min-h-[44px] px-4 py-2 rounded-xl border border-slate-300 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <span id="listCountBadge" class="text-xs font-semibold text-slate-500">Показано: 89 слов</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th class="py-3 px-3 sm:px-4">Слово (EN)</th>
+                                <th class="py-3 px-4 hidden sm:table-cell">Подсказка</th>
+                                <th class="py-3 px-3 sm:px-4">Перевод</th>
+                                <th class="py-3 px-4 hidden md:table-cell">Модуль</th>
+                                <th class="py-3 px-3 sm:px-4 text-right">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wordTableBody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Строки генерируются JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- РАЗДЕЛ 2: ТРЕНАЖЕР СЛОВ (КВИЗ И СБОРКА)                             -->
+        <!-- =================================================================== -->
+        <section id="tab-wordQuiz" class="tab-content hidden fade-in space-y-5 sm:space-y-6">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 sm:pb-5 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900">Тренажер запоминания слов</h2>
+                        <p class="text-xs sm:text-sm text-slate-500">Выберите набор слов и режим тренировки.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:flex flex-wrap gap-2">
+                        <select id="quizModuleSelect" onchange="startWordQuiz()" class="min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">Все наборы (89 слов)</option>
+                            <option value="set5">Набор 5: Основные слова (19)</option>
+                            <option value="words4">Words 4 (15 слов)</option>
+                            <option value="words3">Words 3 (22 слова)</option>
+                            <option value="words2">Words 2 (23 слова)</option>
+                            <option value="words1">Words 1 (10 слов)</option>
+                            <option value="mistakes">Только слова на повторение</option>
+                        </select>
+                        <select id="quizModeSelect" onchange="startWordQuiz()" class="min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="choice_en_ru">Тест: EN ➔ RU (4 варианта)</option>
+                            <option value="choice_ru_en">Тест: RU ➔ EN (4 варианта)</option>
+                            <option value="typing">Письмо: Ввод с клавиатуры (RU ➔ EN)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Игровая зона тренажера слов -->
+                <div id="wordQuizArea" class="py-5 sm:py-6 max-w-2xl mx-auto">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
+                        <span id="wqProgressText">Вопрос 1 из 12</span>
+                        <span id="wqScoreText" class="text-emerald-600">Верно: 0</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-5">
+                        <div id="wqProgressBar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 10%"></div>
+                    </div>
+
+                    <!-- Карточка вопроса -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 text-center space-y-2.5 mb-5">
+                        <span id="wqModuleLabel" class="inline-block px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700 text-xs font-bold">Набор 5</span>
+                        <div class="flex items-center justify-center gap-3">
+                            <h3 id="wqQuestionWord" class="text-2xl sm:text-3xl font-extrabold text-slate-900 break-words">Wardrobe</h3>
+                            <button id="wqSpeakBtn" onclick="speakWord(currentWqItem.en)" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white border border-slate-200 hover:bg-indigo-50 text-indigo-600 shadow-sm transition shrink-0" title="Произнести">
+                                🔊
+                            </button>
+                        </div>
+                        <p id="wqHintText" class="text-xs text-slate-500">Выберите правильный перевод</p>
+                    </div>
+
+                    <!-- Варианты ответа (для режима выбора) -->
+                    <div id="wqOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                        <!-- Генерируются JS -->
+                    </div>
+
+                    <!-- Поле ввода (для режима письма) -->
+                    <div id="wqTypingBox" class="hidden space-y-3">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="wqTypeInput" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" placeholder="Напиши слово по-английски..." class="flex-1 min-h-[48px] px-4 py-3 rounded-xl border-2 border-slate-300 text-base font-medium focus:outline-none focus:border-indigo-500">
+                            <button onclick="checkTypedWord()" id="wqTypeSubmitBtn" class="min-h-[48px] px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition shadow-sm">
+                                Проверить
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <button type="button" onclick="showWqGentleHint()" class="min-h-[38px] px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition">
+                                💡 Подсказка (первая буква)
+                            </button>
+                            <span id="wqGentleHintText" class="text-xs font-semibold text-amber-700"></span>
+                        </div>
+                        <div id="wqTypingFeedback" class="hidden p-4 rounded-xl text-sm font-semibold"></div>
+                    </div>
+
+                    <!-- Кнопка "Следующий вопрос" -->
+                    <div class="mt-5 flex justify-end">
+                        <button id="wqNextBtn" onclick="nextWordQuizQuestion()" class="hidden w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm transition shadow-sm">
+                            Следующее слово ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Экран завершения мини-теста -->
+                <div id="wordQuizSummary" class="hidden py-6 sm:py-8 max-w-lg mx-auto text-center space-y-5">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto">
+                        🌟
+                    </div>
+                    <h3 id="wqSummaryHeading" class="text-xl sm:text-2xl font-extrabold text-slate-900">Good job, Sasha!</h3>
+                    <p id="wqSummaryStats" class="text-slate-600 text-sm sm:text-base">Ты ответил правильно на 8 из 10 слов (80%).</p>
+                    <div id="wqMistakesList" class="text-left bg-rose-50 border border-rose-200 rounded-xl p-4 space-y-2 hidden">
+                        <p class="text-xs font-bold uppercase text-rose-700">Давай ещё раз посмотрим на эти слова:</p>
+                        <ul id="wqMistakesUl" class="text-sm text-rose-900 space-y-1 list-disc list-inside"></ul>
+                    </div>
+                    <div class="flex flex-col sm:flex-row justify-center gap-2.5 pt-2">
+                        <button onclick="startWordQuiz()" class="min-h-[48px] px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-sm transition">
+                            🔄 Ещё раунд
+                        </button>
+                        <button onclick="switchTab('exam')" class="min-h-[48px] px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm transition">
+                            🏆 К общему результату
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- РАЗДЕЛ 3: PAST CONTINUOUS (ТЕОРИЯ + ПРАКТИКА)                       -->
+        <!-- =================================================================== -->
+        <section id="tab-grammar" class="tab-content hidden fade-in space-y-5 sm:space-y-6">
+            <!-- Переключатель внутри грамматики: Теория / Тренажер -->
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-700 text-[11px] font-bold mb-1">Простое объяснение A0+</span>
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900">Past Continuous (Процесс в прошлом)</h2>
+                    <p class="text-xs sm:text-sm text-slate-500">Когда кто-то <b>что-то делал в конкретный момент</b> в прошлом (например, вчера вечером).</p>
+                </div>
+                <div class="grid grid-cols-2 sm:flex gap-1.5 bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
+                    <button id="btnGrammarTheory" onclick="setGrammarMode('theory')" class="min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-600 shadow-sm transition">
+                        📖 Правило A0+
+                    </button>
+                    <button id="btnGrammarPractice" onclick="setGrammarMode('practice')" class="min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition">
+                        ✍️ Практика (18)
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3A: Наглядная теория A0+ с озвучкой примеров -->
+            <div id="grammarTheoryView" class="space-y-5 sm:space-y-6">
+                <!-- Карточки формул -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Утверждение -->
+                    <div class="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center">+</span>
+                                <h3 class="font-bold text-slate-900">Плюс (+) Кто-то делал</h3>
+                            </div>
+                            <button onclick="speakSentence('I was eating at 7 pm yesterday. They were laughing at night.')" class="min-w-[40px] min-h-[40px] rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm transition" title="Озвучить примеры">
+                                🔊
+                            </button>
+                        </div>
+                        <div class="p-3 rounded-xl bg-emerald-50/70 text-emerald-900 font-mono text-xs sm:text-sm font-bold leading-relaxed">
+                            I / he / she / it + <span class="underline">was</span> + глагол-<b>ing</b><br>
+                            we / you / they + <span class="underline">were</span> + глагол-<b>ing</b>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            • I <b>was eating</b> at 7 pm yesterday. (Я ел...)<br>
+                            • They <b>were laughing</b> at night. (Они смеялись...)
+                        </p>
+                    </div>
+
+                    <!-- Отрицание -->
+                    <div class="bg-white p-5 rounded-2xl border border-rose-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 font-bold flex items-center justify-center">−</span>
+                                <h3 class="font-bold text-slate-900">Минус (−) Не делал</h3>
+                            </div>
+                            <button onclick="speakSentence('He was not working yesterday. We were not walking at night.')" class="min-w-[40px] min-h-[40px] rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 flex items-center justify-center text-sm transition" title="Озвучить примеры">
+                                🔊
+                            </button>
+                        </div>
+                        <div class="p-3 rounded-xl bg-rose-50/70 text-rose-900 font-mono text-xs sm:text-sm font-bold leading-relaxed">
+                            was + not = <span class="underline">wasn't</span> + V-<b>ing</b><br>
+                            were + not = <span class="underline">weren't</span> + V-<b>ing</b>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            • He <b>wasn't working</b> yesterday. (Он не работал...)<br>
+                            • We <b>weren't walking</b> at night. (Мы не гуляли...)
+                        </p>
+                    </div>
+
+                    <!-- Вопрос -->
+                    <div class="bg-white p-5 rounded-2xl border border-indigo-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">?</span>
+                                <h3 class="font-bold text-slate-900">Вопрос (?) Делал ли?</h3>
+                            </div>
+                            <button onclick="speakSentence('Were you walking near the window? Was she writing?')" class="min-w-[40px] min-h-[40px] rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm transition" title="Озвучить примеры">
+                                🔊
+                            </button>
+                        </div>
+                        <div class="p-3 rounded-xl bg-indigo-50/70 text-indigo-900 font-mono text-xs sm:text-sm font-bold leading-relaxed">
+                            <span class="underline">Was / Were</span> + кто + глагол-<b>ing</b>?
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            • <b>Were</b> you <b>walking</b> near the window?<br>
+                            • <b>Was</b> she <b>writing</b> on her tablet?
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Правила правописания -ing на словах из словаря + Слова-маркеры -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+                    <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <span>✍️</span> Правила добавления окончания -ing (на ваших словах)
+                        </h3>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="font-bold text-indigo-600">1. Обычные глаголы:</span> просто добавляем <b>-ing</b>.<br>
+                                <span class="text-xs text-slate-500">laugh ➔ laugh<b>ing</b>, eat ➔ eat<b>ing</b>, walk ➔ walk<b>ing</b>, buy ➔ buy<b>ing</b>, drink ➔ drink<b>ing</b></span>
+                            </li>
+                            <li class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="font-bold text-indigo-600">2. Оканчиваются на немую -e:</span> убираем <b>-e</b> + <b>-ing</b>.<br>
+                                <span class="text-xs text-slate-500">writ<b>e</b> ➔ writ<b>ing</b>, mak<b>e</b> ➔ mak<b>ing</b>, bit<b>e</b> ➔ bit<b>ing</b>, liv<b>e</b> ➔ liv<b>ing</b>, creat<b>e</b> ➔ creat<b>ing</b></span>
+                            </li>
+                            <li class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="font-bold text-indigo-600">3. Краткая гласная + 1 согласная:</span> согласная удваивается.<br>
+                                <span class="text-xs text-slate-500">wi<b>n</b> ➔ wi<b>nn</b>ing, ge<b>t</b> ➔ ge<b>tt</b>ing</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <span>⏱️</span> Когда используется и слова-маркеры
+                        </h3>
+                        <div class="space-y-3 text-sm text-slate-700">
+                            <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200/70 flex items-start justify-between gap-2">
+                                <div>
+                                    <p class="font-bold text-amber-900">1. Точное время в прошлом:</p>
+                                    <p class="text-xs text-amber-800 mt-1"><b>at 6 pm yesterday</b>, <b>at night</b>, <b>from 3 to 5 yesterday</b>.<br>
+                                    <i>Yesterday at 8 pm I was eating in the kitchen.</i></p>
+                                </div>
+                                <button onclick="speakSentence('Yesterday at 8 pm I was eating in the kitchen.')" class="min-w-[36px] min-h-[36px] rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center text-xs shrink-0" title="Озвучить">🔊</button>
+                            </div>
+                            <div class="p-3 rounded-xl bg-sky-50/70 border border-sky-200/70 flex items-start justify-between gap-2">
+                                <div>
+                                    <p class="font-bold text-sky-900">2. Два длительных действия одновременно (While):</p>
+                                    <p class="text-xs text-sky-800 mt-1"><i><b>While</b> he was writing a science fiction book, his cat was sleeping under the bed.</i></p>
+                                </div>
+                                <button onclick="speakSentence('While he was writing a science fiction book, his cat was sleeping under the bed.')" class="min-w-[36px] min-h-[36px] rounded-lg bg-sky-100 text-sky-900 flex items-center justify-center text-xs shrink-0" title="Озвучить">🔊</button>
+                            </div>
+                            <div class="p-3 rounded-xl bg-violet-50/70 border border-violet-200/70 flex items-start justify-between gap-2">
+                                <div>
+                                    <p class="font-bold text-violet-900">3. Длительный фон прерван коротким действием (When):</p>
+                                    <p class="text-xs text-violet-800 mt-1"><i>I <b>was walking</b> near the window <b>when</b> I <b>saw</b> a famous detective.</i></p>
+                                </div>
+                                <button onclick="speakSentence('I was walking near the window when I saw a famous detective.')" class="min-w-[36px] min-h-[36px] rounded-lg bg-violet-100 text-violet-900 flex items-center justify-center text-xs shrink-0" title="Озвучить">🔊</button>
+                            </div>
+                        </div>
+                        <button onclick="setGrammarMode('practice')" class="w-full min-h-[48px] py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-sm transition">
+                            Перейти к практике Past Continuous ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3B: Тренажер Past Continuous -->
+            <div id="grammarPracticeView" class="hidden bg-white p-4 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="max-w-2xl mx-auto">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
+                        <span id="gpProgressText">Задание 1 из 18</span>
+                        <span id="gpScoreText" class="text-emerald-600">Верно: 0</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-5">
+                        <div id="gpProgressBar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 5%"></div>
+                    </div>
+
+                    <!-- Контейнер задания -->
+                    <div id="gpTaskContainer" class="space-y-4 sm:space-y-5">
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-2">
+                            <span id="gpTypeBadge" class="inline-block px-2.5 py-1 rounded-md bg-violet-100 text-violet-700 text-xs font-bold">
+                                Выбор формы
+                            </span>
+                            <h3 id="gpPromptText" class="text-base sm:text-xl font-bold text-slate-900 leading-snug">
+                                Yesterday at 7 pm I ______ (eat) dinner near the window.
+                            </h3>
+                            <p id="gpTranslationHint" class="text-xs text-slate-500 italic">
+                                Вчера в 7 вечера я ужинал возле окна.
+                            </p>
+                        </div>
+
+                        <!-- Варианты ответа (для choice и error_fix) -->
+                        <div id="gpOptionsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3"></div>
+
+                        <!-- Ввод ответа с клавиатуры (для fill_in) -->
+                        <div id="gpInputBox" class="hidden space-y-3">
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="gpTextInput" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" placeholder="Напишите форму (напр.: was eating)..." class="flex-1 min-h-[48px] px-4 py-3 rounded-xl border-2 border-slate-300 text-base font-medium focus:outline-none focus:border-indigo-500">
+                                <button onclick="checkGrammarInput()" id="gpInputSubmitBtn" class="min-h-[48px] px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition">
+                                    Ответить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Конструктор предложения из слов (для scramble) -->
+                        <div id="gpScrambleBox" class="hidden space-y-4">
+                            <div id="gpScrambleAnswerArea" class="min-h-[60px] p-3 rounded-xl bg-indigo-50/60 border-2 border-dashed border-indigo-300 flex flex-wrap gap-2 items-center">
+                                <span class="text-xs text-indigo-400">Нажимайте на слова ниже, чтобы собрать предложение...</span>
+                            </div>
+                            <div id="gpScrambleBankArea" class="flex flex-wrap gap-2"></div>
+                            <div class="grid grid-cols-2 sm:flex gap-2">
+                                <button onclick="resetScramble()" class="min-h-[44px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                                    Сбросить слова
+                                </button>
+                                <button onclick="checkScrambleAnswer()" id="gpScrambleSubmitBtn" class="min-h-[44px] px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
+                                    Проверить предложение
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Пояснение после ответа + кнопка озвучки правильного предложения -->
+                        <div id="gpExplanationBox" class="hidden p-4 rounded-xl text-sm border space-y-2"></div>
+
+                        <div class="flex justify-end pt-1">
+                            <button id="gpNextBtn" onclick="nextGrammarQuestion()" class="hidden w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm transition">
+                                Следующее задание ➡️
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Финал практики Past Continuous -->
+                    <div id="gpSummaryContainer" class="hidden text-center py-6 space-y-4">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl mx-auto">
+                            🌟
+                        </div>
+                        <h3 id="gpSummaryHeading" class="text-xl sm:text-2xl font-extrabold text-slate-900">Good job, Sasha!</h3>
+                        <p id="gpSummaryText" class="text-slate-600 text-sm sm:text-base">Твой результат: 15 из 18 заданий (83%).</p>
+                        <div class="flex flex-col sm:flex-row justify-center gap-2.5 pt-2">
+                            <button onclick="resetGrammarPractice()" class="min-h-[48px] px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition">
+                                🔄 Пройти ещё раз
+                            </button>
+                            <button onclick="switchTab('exam')" class="min-h-[48px] px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm transition">
+                                🏆 Итоговый результат
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- РАЗДЕЛ 4: ИТОГОВЫЙ ЭКЗАМЕН И ЧЕТКИЙ РЕЗУЛЬТАТ (DASHBOARD)           -->
+        <!-- =================================================================== -->
+        <section id="tab-exam" class="tab-content hidden fade-in space-y-5 sm:space-y-6">
+            <!-- Панель управления экзаменом и общей статистикой -->
+            <div class="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-700 rounded-3xl p-5 sm:p-8 text-white shadow-lg">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                    <div class="space-y-2 max-w-2xl">
+                        <span class="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
+                            Контроль знаний и аналитика
+                        </span>
+                        <h2 class="text-xl sm:text-3xl font-extrabold">Итоговый экзамен и четкий результат</h2>
+                        <p class="text-indigo-100 text-xs sm:text-base leading-relaxed">
+                            Пройдите комплексный тест (25 вопросов: слова из всех 5 модулей + грамматика Past Continuous), чтобы получить детальную оценку и разбор ошибок.
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2.5 shrink-0">
+                        <button onclick="startFinalExam(false)" class="min-h-[48px] px-6 py-3 rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-extrabold text-sm shadow-md transition flex items-center justify-center gap-2">
+                            🚀 Начать контрольный тест
+                        </button>
+                        <button id="btnRetryExamMistakes" onclick="startFinalExam(true)" class="hidden min-h-[48px] px-5 py-3 rounded-2xl bg-amber-400 text-slate-900 hover:bg-amber-300 font-extrabold text-sm shadow-md transition flex items-center justify-center gap-2">
+                            🔁 Повторить ошибки
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Активный экран прохождения итогового экзамена (скрыт по умолчанию) -->
+            <div id="examActiveBox" class="hidden bg-white p-5 sm:p-8 rounded-2xl border border-slate-200 shadow-sm max-w-3xl mx-auto">
+                <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase mb-2.5">
+                    <span id="examQCounter">Вопрос 1 из 25</span>
+                    <span id="examCategoryBadge" class="px-2.5 py-1 rounded bg-slate-100 text-slate-700">Words 4</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mb-5">
+                    <div id="examProgressBar" class="bg-gradient-to-r from-indigo-600 to-violet-600 h-full transition-all duration-300" style="width: 4%"></div>
+                </div>
+
+                <div class="space-y-5">
+                    <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <p id="examSubPrompt" class="text-xs font-bold text-indigo-600 uppercase mb-1">Переведите слово</p>
+                        <h3 id="examMainPrompt" class="text-lg sm:text-2xl font-extrabold text-slate-900 break-words">Eight months ago</h3>
+                    </div>
+
+                    <div id="examOptionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3"></div>
+                </div>
+            </div>
+
+            <!-- Блок с ЧЕТКИМ РЕЗУЛЬТАТОМ ЭКЗАМЕНА (показывается после теста) -->
+            <div id="examResultReport" class="hidden bg-white rounded-3xl border border-slate-200 shadow-md overflow-hidden">
+                <div class="p-5 sm:p-8 border-b border-slate-200 bg-slate-50/70">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+                        <div class="flex items-center gap-4 sm:gap-5">
+                            <!-- Круговой индикатор процента -->
+                            <div id="examScoreCircle" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-8 border-emerald-500 flex flex-col items-center justify-center bg-white shadow-sm shrink-0">
+                                <span id="examPercentText" class="text-xl sm:text-2xl font-black text-slate-900">92%</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Итог</span>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span id="examGradeBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">
+                                        Оценка: Отлично (5)
+                                    </span>
+                                </div>
+                                <h3 id="examVerdictTitle" class="text-lg sm:text-2xl font-extrabold text-slate-900">
+                                    Превосходный результат!
+                                </h3>
+                                <p id="examVerdictDesc" class="text-xs sm:text-sm text-slate-600">
+                                    Вы дали 23 правильных ответа из 25.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-2.5">
+                            <button onclick="startFinalExam(false)" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition">
+                                🔄 Пройти заново
+                            </button>
+                            <button id="reportRetryMistakesBtn" onclick="startFinalExam(true)" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs sm:text-sm transition">
+                                🛠️ Отработать ошибки
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Детальная разбивка по 6 категориям (5 модулей слов + Past Continuous) -->
+                <div class="p-5 sm:p-8 space-y-6">
+                    <div>
+                        <h4 class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-500 mb-3.5">
+                            Раздельная статистика по темам экзамена
+                        </h4>
+                        <div id="examBreakdownGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                            <!-- Генерируется JS -->
+                        </div>
+                    </div>
+
+    <!-- Модальное окно подтверждения сброса прогресса -->
+    <div id="resetConfirmModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 space-y-4">
+            <h3 class="text-lg font-extrabold text-slate-900">Сбросить прогресс, Саша?</h3>
+            <p class="text-sm text-slate-600">Все отметки по словам и результаты тестов будут очищены.</p>
+            <div class="grid grid-cols-2 gap-2.5 pt-2">
+                <button onclick="closeResetModal()" class="min-h-[44px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+                    Отмена
+                </button>
+                <button onclick="confirmResetAllProgress()" class="min-h-[44px] px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition">
+                    Да, сбросить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-slate-400">
+            LinguaPractice A0+ для Саши • Все 89 слов из 5 наборов + Past Continuous
+        </div>
+    </footer>
+
+    <!-- ======================================================================= -->
+    <!-- JAVASCRIPT ЛОГИКА ПРИЛОЖЕНИЯ                                            -->
+    <!-- ======================================================================= -->
+    <script>
+        // ФРАЗЫ ПОХВАЛЫ ДЛЯ SASHA ПОСЛЕ КАЖДОГО УСПЕШНОГО ВЫПОЛНЕНИЯ СЕКЦИИ
+        const SASHA_PRAISE_MESSAGES = [
+            { title: 'Good job, Sasha!', sub: 'Ты молодец, Саша! Секция выполнена!' },
+            { title: 'Good job, Sasha! You did it!', sub: 'Отлично справился, Саша! Так держать!' },
+            { title: 'Awesome work, Sasha!', sub: 'Супер-результат, Саша! Шаг за шагом к успеху!' },
+            { title: 'Great job, Sasha! Keep going!', sub: 'Классная работа, Саша! Двигаемся дальше!' }
+        ];
+
+        let praiseTimeoutId = null;
+
+        function triggerSashaPraise(customSub = null) {
+            const banner = document.getElementById('sashaPraiseBanner');
+            const titleEl = document.getElementById('sashaPraiseTitle');
+            const subEl = document.getElementById('sashaPraiseSub');
+            if (!banner || !titleEl || !subEl) return;
+
+            const msg = SASHA_PRAISE_MESSAGES[Math.floor(Math.random() * SASHA_PRAISE_MESSAGES.length)];
+            titleEl.textContent = msg.title;
+            subEl.textContent = customSub || msg.sub;
+
+            banner.classList.remove('hidden');
+            if (praiseTimeoutId) clearTimeout(praiseTimeoutId);
+            praiseTimeoutId = setTimeout(() => {
+                hideSashaPraise();
+            }, 4200);
+        }
+
+        function hideSashaPraise() {
+            const banner = document.getElementById('sashaPraiseBanner');
+            if (banner) banner.classList.add('hidden');
+        }
+
+        // 1. БАЗА ДАННЫХ СЛОВ (ТОЧНО ПО СПИСКУ ПОЛЬЗОВАТЕЛЯ: 5 НАБОРОВ, 89 СЛОВ)
+        const VOCAB_MODULES = {
+            set5: { id: 'set5', name: 'Набор 5 (Основные)', shortName: 'Набор 5', count: 19 },
+            words4: { id: 'words4', name: 'Words 4 (15 слов)', shortName: 'Words 4', count: 15 },
+            words3: { id: 'words3', name: 'Words 3 (22 слова)', shortName: 'Words 3', count: 22 },
+            words2: { id: 'words2', name: 'Words 2 (23 слова)', shortName: 'Words 2', count: 23 },
+            words1: { id: 'words1', name: 'Words 1 (10 слов)', shortName: 'Words 1', count: 10 }
+        };
+
+        const WORDS_DATA = [
+            // Набор 5 (19 слов)
+            { id: 's5_1', mod: 'set5', en: 'Laugh', ru: 'смеяться', hint: '[lɑːf] • глагол' },
+            { id: 's5_2', mod: 'set5', en: 'At night', ru: 'ночью', hint: '[ət naɪt] • время' },
+            { id: 's5_3', mod: 'set5', en: 'Hundred', ru: 'сто', hint: '[ˈhʌndrəd] • число' },
+            { id: 's5_4', mod: 'set5', en: 'Window', ru: 'окно', hint: '[ˈwɪndəʊ] • комната' },
+            { id: 's5_5', mod: 'set5', en: 'Under', ru: 'под', hint: '[ˈʌndə] • под столом/кроватью' },
+            { id: 's5_6', mod: 'set5', en: 'Pillow', ru: 'подушка', hint: '[ˈpɪləʊ] • на кровати' },
+            { id: 's5_7', mod: 'set5', en: 'Next to', ru: 'рядом с', hint: '[nekst tuː] • рядом' },
+            { id: 's5_8', mod: 'set5', en: 'Bed', ru: 'кровать', hint: '[bed] • спальня' },
+            { id: 's5_9', mod: 'set5', en: 'Behind', ru: 'за', hint: '[bɪˈhaɪnd] • позади' },
+            { id: 's5_10', mod: 'set5', en: 'Wardrobe', ru: 'шкаф', hint: '[ˈwɔːdrəʊb] • для одежды' },
+            { id: 's5_11', mod: 'set5', en: 'Between', ru: 'между', hint: '[bɪˈtwiːn] • посередине двух' },
+            { id: 's5_12', mod: 'set5', en: 'Plant', ru: 'растение', hint: '[plɑːnt] • цветок/растение' },
+            { id: 's5_13', mod: 'set5', en: 'In front of', ru: 'перед', hint: '[ɪn frʌnt ɒv] • впереди' },
+            { id: 's5_14', mod: 'set5', en: 'Chair', ru: 'стул', hint: '[tʃeə] • сидеть на нём' },
+            { id: 's5_15', mod: 'set5', en: 'Floor', ru: 'пол', hint: '[flɔː] • под ногами' },
+            { id: 's5_16', mod: 'set5', en: 'Eat – ate', ru: 'есть – ел', hint: '[iːt – et] • еда (Past: ate)' },
+            { id: 's5_17', mod: 'set5', en: 'Make – made', ru: 'делать – сделал', hint: '[meɪk – meɪd] • сделать руками (made)' },
+            { id: 's5_18', mod: 'set5', en: 'Go – went', ru: 'идти – ходил', hint: '[ɡəʊ – went] • идти/ехать (went)' },
+            { id: 's5_19', mod: 'set5', en: 'Have – had', ru: 'иметь – имел', hint: '[hæv – hæd] • иметь что-то (had)' },
+
+            // Words 4 (15 слов)
+            { id: 'w4_1', mod: 'words4', en: 'Yesterday', ru: 'вчера', hint: '[ˈjestədeɪ] • день до сегодня' },
+            { id: 'w4_2', mod: 'words4', en: 'Last year', ru: 'в прошлом году', hint: '[lɑːst jɪə] • прошлый год' },
+            { id: 'w4_3', mod: 'words4', en: 'Eight months ago', ru: '8 месяцев назад', hint: '[eɪt mʌnθs əˈɡəʊ] • 8 мес. назад' },
+            { id: 'w4_4', mod: 'words4', en: 'Win – won', ru: 'выигрывать – выиграл', hint: '[wɪn – wʌn] • победа в игре (won)' },
+            { id: 'w4_5', mod: 'words4', en: 'Get – got', ru: 'получать – получил', hint: '[ɡet – ɡɒt] • получить подарок (got)' },
+            { id: 'w4_6', mod: 'words4', en: 'Buy – bought', ru: 'покупать – купил', hint: '[baɪ – bɔːt] • купить в магазине (bought)' },
+            { id: 'w4_7', mod: 'words4', en: 'Sell – sold', ru: 'продавать – продал', hint: '[sel – səʊld] • продать за деньги (sold)' },
+            { id: 'w4_8', mod: 'words4', en: 'Write – wrote', ru: 'писать – писал', hint: '[raɪt – rəʊt] • писать текст/письмо (wrote)' },
+            { id: 'w4_9', mod: 'words4', en: 'Thousand', ru: 'тысяча', hint: '[ˈθaʊzənd] • 1000' },
+            { id: 'w4_10', mod: 'words4', en: 'Was', ru: 'был', hint: '[wɒz] • я/он/она был(а)' },
+            { id: 'w4_11', mod: 'words4', en: 'Were', ru: 'были', hint: '[wɜː] • мы/ты/они были' },
+            { id: 'w4_12', mod: 'words4', en: 'Past', ru: 'прошлое', hint: '[pɑːst] • то, что уже прошло' },
+            { id: 'w4_13', mod: 'words4', en: 'See – saw', ru: 'видеть – видел', hint: '[siː – sɔː] • увидеть глазами (saw)' },
+            { id: 'w4_14', mod: 'words4', en: 'Go – went', ru: 'ходить – ходил', hint: '[ɡəʊ – went] • ходить (Past: went)' },
+            { id: 'w4_15', mod: 'words4', en: 'Tablet', ru: 'планшет', hint: '[ˈtæblət] • сенсорный планшет' },
+
+            // Words 3 (22 слова)
+            { id: 'w3_1', mod: 'words3', en: 'Why', ru: 'почему', hint: '[waɪ] • вопрос «почему?»' },
+            { id: 'w3_2', mod: 'words3', en: 'When', ru: 'когда', hint: '[wen] • вопрос «когда?»' },
+            { id: 'w3_3', mod: 'words3', en: 'Where', ru: 'где, куда', hint: '[weə] • вопрос «где / куда?»' },
+            { id: 'w3_4', mod: 'words3', en: 'How', ru: 'как', hint: '[haʊ] • вопрос «как?»' },
+            { id: 'w3_5', mod: 'words3', en: 'Feel', ru: 'чувствовать', hint: '[fiːl] • чувствовать радость/усталость' },
+            { id: 'w3_6', mod: 'words3', en: 'Hear', ru: 'слышать', hint: '[hɪə] • слышать ушами звук' },
+            { id: 'w3_7', mod: 'words3', en: 'See', ru: 'видеть', hint: '[siː] • видеть глазами' },
+            { id: 'w3_8', mod: 'words3', en: 'Laugh', ru: 'смеяться', hint: '[lɑːf] • смеяться («ха-ха»)' },
+            { id: 'w3_9', mod: 'words3', en: 'Live', ru: 'жить', hint: '[lɪv] • жить в городе/доме' },
+            { id: 'w3_10', mod: 'words3', en: 'Win – won', ru: 'побеждать, выигрывать', hint: '[wɪn – wʌn] • победить в конкурсе' },
+            { id: 'w3_11', mod: 'words3', en: 'Allow', ru: 'разрешать, позволять', hint: '[əˈlaʊ] • позволить кому-то' },
+            { id: 'w3_12', mod: 'words3', en: 'Write', ru: 'писать', hint: '[raɪt] • писать ручкой/на планшете' },
+            { id: 'w3_13', mod: 'words3', en: 'Expect', ru: 'ожидать', hint: '[ɪkˈspekt] • ждать/ожидать события' },
+            { id: 'w3_14', mod: 'words3', en: 'Would like', ru: 'хотел бы', hint: '[wʊd laɪk] • вежливое «хотел бы»' },
+            { id: 'w3_15', mod: 'words3', en: 'Hate', ru: 'ненавидеть', hint: '[heɪt] • очень не любить' },
+            { id: 'w3_16', mod: 'words3', en: 'Order', ru: 'приказывать', hint: '[ˈɔːdə] • отдать приказ' },
+            { id: 'w3_17', mod: 'words3', en: 'Let', ru: 'позволять, разрешать', hint: '[let] • разрешить (без to)' },
+            { id: 'w3_18', mod: 'words3', en: 'Make smb do', ru: 'заставлять кого-то делать', hint: '[meɪk] • заставить сделать' },
+            { id: 'w3_19', mod: 'words3', en: 'Notice', ru: 'замечать', hint: '[ˈnəʊtɪs] • заметить деталь' },
+            { id: 'w3_20', mod: 'words3', en: 'Whose', ru: 'чей', hint: '[huːz] • вопрос «чей это?»' },
+            { id: 'w3_21', mod: 'words3', en: 'Who', ru: 'кто', hint: '[huː] • вопрос «кто это?»' },
+            { id: 'w3_22', mod: 'words3', en: 'Which', ru: 'который, какой', hint: '[wɪtʃ] • выбрать из вариантов' },
+
+            // Words 2 (23 слова)
+            { id: 'w2_1', mod: 'words2', en: 'New', ru: 'новый', hint: '[njuː] • не старый' },
+            { id: 'w2_2', mod: 'words2', en: 'Dangerous', ru: 'опасный', hint: '[ˈdeɪndʒərəs] • может быть опасно' },
+            { id: 'w2_3', mod: 'words2', en: 'Adventure', ru: 'приключение', hint: '[ədˈventʃə] • интересное путешествие' },
+            { id: 'w2_4', mod: 'words2', en: 'Future', ru: 'будущее', hint: '[ˈfjuːtʃə] • то, что будет потом' },
+            { id: 'w2_5', mod: 'words2', en: 'Space', ru: 'космос', hint: '[speɪs] • звёзды и планеты' },
+            { id: 'w2_6', mod: 'words2', en: 'Science fiction', ru: 'научная фантастика', hint: '[ˈsaɪəns ˈfɪkʃn] • фантастика о космосе/будущем' },
+            { id: 'w2_7', mod: 'words2', en: 'Crime', ru: 'преступление', hint: '[kraɪm] • нарушение закона' },
+            { id: 'w2_8', mod: 'words2', en: 'Event', ru: 'событие', hint: '[ɪˈvent] • важный случай' },
+            { id: 'w2_9', mod: 'words2', en: 'End', ru: 'конец', hint: '[end] • завершение' },
+            { id: 'w2_10', mod: 'words2', en: 'Who', ru: 'кто', hint: '[huː] • о человеке' },
+            { id: 'w2_11', mod: 'words2', en: 'Famous (for)', ru: 'известный (чем-то)', hint: '[ˈfeɪməs] • знаменитый' },
+            { id: 'w2_12', mod: 'words2', en: 'I was born', ru: 'я родился', hint: '[aɪ wɒz bɔːn] • день рождения' },
+            { id: 'w2_13', mod: 'words2', en: 'Intelligent', ru: 'умный', hint: '[ɪnˈtelɪdʒənt] • сообразительный' },
+            { id: 'w2_14', mod: 'words2', en: 'To wear', ru: 'носить', hint: '[tuː weə] • надевать одежду' },
+            { id: 'w2_15', mod: 'words2', en: 'Clothes', ru: 'одежда', hint: '[kləʊðz] • куртка, штаны, футболка' },
+            { id: 'w2_16', mod: 'words2', en: 'When', ru: 'когда', hint: '[wen] • время действия' },
+            { id: 'w2_17', mod: 'words2', en: 'Ship', ru: 'корабль', hint: '[ʃɪp] • большой корабль' },
+            { id: 'w2_18', mod: 'words2', en: 'Create', ru: 'создавать', hint: '[kriˈeɪt] • придумать и создать' },
+            { id: 'w2_19', mod: 'words2', en: 'Under', ru: 'под', hint: '[ˈʌndə] • внизу под чем-то' },
+            { id: 'w2_20', mod: 'words2', en: 'Find', ru: 'находить', hint: '[faɪnd] • найти пропажу' },
+            { id: 'w2_21', mod: 'words2', en: 'Imagination', ru: 'воображение', hint: '[ɪˌmædʒɪˈneɪʃn] • фантазия в голове' },
+            { id: 'w2_22', mod: 'words2', en: 'Investigation', ru: 'расследование', hint: '[ɪnˌvestɪˈɡeɪʃn] • поиск правды детективом' },
+            { id: 'w2_23', mod: 'words2', en: 'Want', ru: 'хотеть', hint: '[wɒnt] • хотеть что-то' },
+
+            // Words 1 (10 слов)
+            { id: 'w1_1', mod: 'words1', en: 'Now', ru: 'сейчас', hint: '[naʊ] • прямо сейчас' },
+            { id: 'w1_2', mod: 'words1', en: 'Always', ru: 'всегда', hint: '[ˈɔːlweɪz] • каждый раз' },
+            { id: 'w1_3', mod: 'words1', en: 'Work', ru: 'работать', hint: '[wɜːk] • трудиться' },
+            { id: 'w1_4', mod: 'words1', en: 'Walk', ru: 'гулять', hint: '[wɔːk] • гулять пешком' },
+            { id: 'w1_5', mod: 'words1', en: 'Drink', ru: 'пить', hint: '[drɪŋk] • пить воду/сок/чай' },
+            { id: 'w1_6', mod: 'words1', en: 'Clean my teeth', ru: 'чистить зубы', hint: '[kliːn maɪ tiːθ] • щёткой по утрам/вечерам' },
+            { id: 'w1_7', mod: 'words1', en: 'Bite', ru: 'кусать', hint: '[baɪt] • кусать зубами' },
+            { id: 'w1_8', mod: 'words1', en: 'Do sport', ru: 'заниматься спортом', hint: '[duː spɔːt] • тренироваться' },
+            { id: 'w1_9', mod: 'words1', en: 'Math', ru: 'математика', hint: '[mæθ] • цифры и примеры' },
+            { id: 'w1_10', mod: 'words1', en: 'P.E.', ru: 'физкультура', hint: '[ˌpiː ˈiː] • спорт в школе' }
+        ];
+
+        // 2. БАНК ЗАДАНИЙ ПО PAST CONTINUOUS (18 ЗАДАНИЙ УРОВНЯ A0+ БЕЗ ДВОЙНЫХ СМЫСЛОВ)
+        const GRAMMAR_TASKS = [
+            {
+                id: 'pc_1',
+                type: 'choice',
+                typeLabel: 'A0+ • Выбери was или were',
+                prompt: 'Yesterday at 7 pm I ______ eating dinner near the window.',
+                fullSentence: 'Yesterday at 7 pm I was eating dinner near the window.',
+                ruHint: 'Вчера в 7 вечера я ел ужин у окна.',
+                options: ['was', 'were', 'am', 'are'],
+                answer: 'was',
+                explanation: 'Для «I» (я) в Past Continuous ставим «was»: I was eating.'
+            },
+            {
+                id: 'pc_2',
+                type: 'choice',
+                typeLabel: 'A0+ • Выбери was или were',
+                prompt: 'They ______ laughing at night in the room.',
+                fullSentence: 'They were laughing at night in the room.',
+                ruHint: 'Они смеялись ночью в комнате.',
+                options: ['were', 'was', 'is', 'do'],
+                answer: 'were',
+                explanation: 'Для «They» (они — много людей) ставим «were»: They were laughing.'
+            },
+            {
+                id: 'pc_3',
+                type: 'fill_in',
+                typeLabel: 'A0+ • Добавь -ing (без лишней -e)',
+                prompt: 'At 5 pm yesterday she was ______ (write) on her tablet.',
+                fullSentence: 'At 5 pm yesterday she was writing on her tablet.',
+                ruHint: 'Вчера в 5 вечера она писала на планшете. (write ➔ writing)',
+                answer: 'writing',
+                explanation: 'В слове write убираем конечную букву -e и пишем -ing: writing.'
+            },
+            {
+                id: 'pc_4',
+                type: 'choice',
+                typeLabel: 'A0+ • Процесс в прошлом',
+                prompt: 'I ______ walking near the window when I saw a cat.',
+                fullSentence: 'I was walking near the window when I saw a cat.',
+                ruHint: 'Я гулял у окна, когда увидел кота.',
+                options: ['was', 'were', 'am', 'did'],
+                answer: 'was',
+                explanation: '«I» всегда идёт с «was»: I was walking.'
+            },
+            {
+                id: 'pc_5',
+                type: 'scramble',
+                typeLabel: 'A0+ • Собери простое предложение',
+                prompt: 'Собери: «Кот спал под кроватью.»',
+                fullSentence: 'The cat was sleeping under the bed.',
+                ruHint: 'Подсказка: The cat was sleeping under the bed.',
+                words: ['The', 'cat', 'was', 'sleeping', 'under', 'the', 'bed.'],
+                answer: 'The cat was sleeping under the bed.',
+                explanation: 'Один кот (he/it) + was + sleeping (спал) + under the bed (под кроватью).'
+            },
+            {
+                id: 'pc_6',
+                type: 'choice',
+                typeLabel: 'A0+ • Отрицание (не делал)',
+                prompt: 'We ______ wearing warm clothes yesterday.',
+                fullSentence: 'We were not wearing warm clothes yesterday.',
+                ruHint: 'Мы не носили тёплую одежду вчера.',
+                options: ["weren't", "wasn't", "don't", "aren't"],
+                answer: "weren't",
+                explanation: 'Для «We» (мы) отрицание — «weren’t» (were not).'
+            },
+            {
+                id: 'pc_7',
+                type: 'fill_in',
+                typeLabel: 'A0+ • Добавь -ing',
+                prompt: 'Yesterday morning I was ______ (walk) with my dog.',
+                fullSentence: 'Yesterday morning I was walking with my dog.',
+                ruHint: 'Вчера утром я гулял с собакой. (walk ➔ walking)',
+                answer: 'walking',
+                explanation: 'К слову walk просто добавляем -ing: walking.'
+            },
+            {
+                id: 'pc_8',
+                type: 'error_fix',
+                typeLabel: 'A0+ • Найди правильную форму -ing',
+                prompt: 'В слове «biteing» ошибка (лишняя буква e). Как правильно?',
+                fullSentence: 'The dog was biting my pillow.',
+                ruHint: 'Собака кусала мою подушку.',
+                options: ['biting', 'biteing', 'bited', 'bite'],
+                answer: 'biting',
+                explanation: 'Буква -e в конце bite исчезает перед -ing: biting.'
+            },
+            {
+                id: 'pc_9',
+                type: 'choice',
+                typeLabel: 'A0+ • Вопрос в начале',
+                prompt: '______ you drinking tea at 6 pm yesterday?',
+                fullSentence: 'Were you drinking tea at 6 pm yesterday?',
+                ruHint: 'Ты пил чай вчера в 6 вечера?',
+                options: ['Were', 'Was', 'Do', 'Are'],
+                answer: 'Were',
+                explanation: 'С «you» в Past Continuous всегда используем «Were».'
+            },
+            {
+                id: 'pc_10',
+                type: 'scramble',
+                typeLabel: 'A0+ • Собери вопрос',
+                prompt: 'Собери вопрос: «Ты работал вчера?»',
+                fullSentence: 'Were you working yesterday?',
+                ruHint: 'Начни с «Were you...»',
+                words: ['Were', 'you', 'working', 'yesterday?'],
+                answer: 'Were you working yesterday?',
+                explanation: 'Вопрос начинается с Were + you + working + yesterday?'
+            },
+            {
+                id: 'pc_11',
+                type: 'fill_in',
+                typeLabel: 'A0+ • Удвоение согласной',
+                prompt: 'He was ______ (win) the game at 4 pm.',
+                fullSentence: 'He was winning the game at 4 pm.',
+                ruHint: 'Он выигрывал игру в 4 вечера. (win ➔ winning)',
+                answer: 'winning',
+                explanation: 'В коротком слове win согласная n удваивается: winning.'
+            },
+            {
+                id: 'pc_12',
+                type: 'choice',
+                typeLabel: 'A0+ • Выбери was или were',
+                prompt: 'My friends ______ playing near the wardrobe.',
+                fullSentence: 'My friends were playing near the wardrobe.',
+                ruHint: 'Мои друзья играли у шкафа.',
+                options: ['were', 'was', 'am', 'does'],
+                answer: 'were',
+                explanation: 'Friends (друзья) — множественное число, поэтому ставим «were».'
+            },
+            {
+                id: 'pc_13',
+                type: 'choice',
+                typeLabel: 'A0+ • Занятия спортом',
+                prompt: 'We ______ doing sport at P.E. yesterday.',
+                fullSentence: 'We were doing sport at P.E. yesterday.',
+                ruHint: 'Мы занимались спортом на физкультуре вчера.',
+                options: ['were', 'was', 'is', 'am'],
+                answer: 'were',
+                explanation: 'Для «We» ставим «were»: We were doing sport.'
+            },
+            {
+                id: 'pc_14',
+                type: 'fill_in',
+                typeLabel: 'A0+ • Добавь -ing (без -e)',
+                prompt: 'Mom was ______ (make) a cake at 3 pm.',
+                fullSentence: 'Mom was making a cake at 3 pm.',
+                ruHint: 'Мама делала торт в 3 часа дня. (make ➔ making)',
+                answer: 'making',
+                explanation: 'Убираем -e в слове make и добавляем -ing: making.'
+            },
+            {
+                id: 'pc_15',
+                type: 'error_fix',
+                typeLabel: 'A0+ • Исправь ошибку с you',
+                prompt: 'Неправильно: «Was you sleeping on the chair?» Выбери верное начало:',
+                fullSentence: 'Were you sleeping on the chair?',
+                ruHint: 'Ты спал на стуле?',
+                options: ['Were you sleeping', 'Was you sleeping', 'Were you sleep', 'Was you sleep'],
+                answer: 'Were you sleeping',
+                explanation: 'С «you» пишем только «Were» и форму с -ing: Were you sleeping?'
+            },
+            {
+                id: 'pc_16',
+                type: 'scramble',
+                typeLabel: 'A0+ • Собери предложение',
+                prompt: 'Собери: «Я чистил зубы вчера утром.»',
+                fullSentence: 'I was cleaning my teeth yesterday.',
+                ruHint: 'Начни с «I was cleaning...»',
+                words: ['I', 'was', 'cleaning', 'my', 'teeth', 'yesterday.'],
+                answer: 'I was cleaning my teeth yesterday.',
+                explanation: 'I + was + cleaning my teeth + yesterday.'
+            },
+            {
+                id: 'pc_17',
+                type: 'choice',
+                typeLabel: 'A0+ • Отрицание (wasn’t)',
+                prompt: 'He ______ drinking milk at night.',
+                fullSentence: 'He was not drinking milk at night.',
+                ruHint: 'Он не пил молоко ночью.',
+                options: ["wasn't", "weren't", "don't", "aren't"],
+                answer: "wasn't",
+                explanation: 'Для «He» в отрицании используем «wasn’t» (was not).'
+            },
+            {
+                id: 'pc_18',
+                type: 'choice',
+                typeLabel: 'A0+ • Слово из словаря',
+                prompt: 'She ______ sitting on the floor near the plant.',
+                fullSentence: 'She was sitting on the floor near the plant.',
+                ruHint: 'Она сидела на полу у растения.',
+                options: ['was', 'were', 'are', 'do'],
+                answer: 'was',
+                explanation: 'Для «She» (она) в Past Continuous используем «was».'
+            }
+        ];
+
+        // 3. СОСТОЯНИЕ ПРИЛОЖЕНИЯ (STATE) И УМНЫЙ ДВИЖОК ОЗВУЧКИ (SMART TTS ENGINE)
+        let appState = {
+            wordStatus: {}, // { wordId: 'known' | 'review' }
+            lastExamResult: null,
+            ttsAccent: 'US', // 'US' | 'UK'
+            ttsRate: 0.94   // 0.94 (1.0x) | 0.76 (0.8x)
+        };
+
+        let availableVoices = [];
+        let audioUnlocked = false;
+        let currentUtterance = null; // Защита от сборщика мусора в iOS Safari/Chrome
+
+        // Асинхронная загрузка голосов с fallback для iOS Safari и Android Chrome
+        function loadVoices() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            if (voices && voices.length > 0) {
+                availableVoices = voices;
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            loadVoices();
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            // Polling fallback на случай, если событие onvoiceschanged не сработает в мобильном браузере
+            let voiceRetries = 0;
+            const voicePoll = setInterval(() => {
+                loadVoices();
+                voiceRetries++;
+                if (availableVoices.length > 0 || voiceRetries > 15) {
+                    clearInterval(voicePoll);
+                }
+            }, 300);
+        }
+
+        // Разблокировка аудио на iOS Safari при первом тапе пользователя
+        function unlockMobileAudio() {
+            if (audioUnlocked || !('speechSynthesis' in window)) return;
+            try {
+                const silentUtterance = new SpeechSynthesisUtterance('');
+                silentUtterance.volume = 0;
+                window.speechSynthesis.speak(silentUtterance);
+                audioUnlocked = true;
+                loadVoices();
+            } catch (e) {
+                // Игнорируем, если заблокировано до прямого клика по кнопке
+            }
+        }
+        document.addEventListener('touchstart', unlockMobileAudio, { once: true, passive: true });
+        document.addEventListener('click', unlockMobileAudio, { once: true, passive: true });
+
+        // Выбор наиболее живого, естественного голоса под выбранный акцент
+        function selectBestNaturalVoice(accent) {
+            if (availableVoices.length === 0) loadVoices();
+            const targetLang = accent === 'UK' ? 'en-GB' : 'en-US';
+            const langPool = availableVoices.filter(v =>
+                v.lang && (v.lang.toLowerCase().startsWith(targetLang.toLowerCase()) || v.lang.toLowerCase().startsWith('en'))
+            );
+            if (langPool.length === 0) return null;
+
+            // Рейтинг естественности голосов (iOS Premium/Enhanced, Edge Natural/Online, Google, Samantha/Daniel)
+            const preferredKeywords = accent === 'UK'
+                ? ['natural', 'online', 'neural', 'premium', 'enhanced', 'google uk english female', 'serena', 'daniel', 'kate', 'arthur', 'en-gb']
+                : ['natural', 'online', 'neural', 'premium', 'enhanced', 'google us english', 'ava', 'samantha', 'aria', 'jenny', 'allison', 'en-us'];
+
+            let bestVoice = null;
+            let bestScore = -1;
+
+            langPool.forEach(voice => {
+                let score = 0;
+                const nameLower = voice.name.toLowerCase();
+                const langLower = voice.lang.toLowerCase();
+
+                if (langLower === targetLang.toLowerCase()) score += 50;
+                else if (langLower.startsWith('en')) score += 10;
+
+                preferredKeywords.forEach((kw, idx) => {
+                    if (nameLower.includes(kw)) {
+                        score += (preferredKeywords.length - idx) * 12;
+                    }
+                });
+
+                // Штрафуем заведомо роботизированные голоса
+                if (nameLower.includes('espeak') || nameLower.includes('compact')) score -= 40;
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestVoice = voice;
+                }
+            });
+
+            return bestVoice || langPool[0];
+        }
+
+        function setWaveActive(active) {
+            const wave = document.getElementById('ttsStatusWave');
+            if (!wave) return;
+            if (active) {
+                wave.classList.remove('hidden');
+                wave.classList.add('inline-flex');
+            } else {
+                wave.classList.add('hidden');
+                wave.classList.remove('inline-flex');
+            }
+        }
+
+        // Форматирование текста для живого, естественного произношения
+        function formatTextForNaturalSpeech(rawText) {
+            let text = rawText.trim();
+            // Для пар неправильных глаголов ("Eat – ate" -> "Eat. Ate.") добавляем естественную паузу
+            if (text.includes('–') || text.includes(' - ')) {
+                text = text.replace(/\s*[–-]\s*/g, '. ');
+            }
+            // Расшифровываем сокращения для озвучки
+            text = text.replace(/\bsmb\b/gi, 'somebody');
+            text = text.replace(/\bP\.E\./gi, 'P E');
+            text = text.replace(/\(for\)/gi, 'for');
+            return text;
+        }
+
+        function speakText(rawText) {
+            if (!('speechSynthesis' in window) || !rawText) return;
+            try {
+                window.speechSynthesis.cancel();
+                const cleanText = formatTextForNaturalSpeech(rawText);
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                currentUtterance = utterance; // Сохраняем ссылку от GC
+
+                const voice = selectBestNaturalVoice(appState.ttsAccent);
+                if (voice) {
+                    utterance.voice = voice;
+                    utterance.lang = voice.lang;
+                } else {
+                    utterance.lang = appState.ttsAccent === 'UK' ? 'en-GB' : 'en-US';
+                }
+
+                utterance.rate = appState.ttsRate;
+                utterance.pitch = 1.02;
+
+                utterance.onstart = () => setWaveActive(true);
+                utterance.onend = () => {
+                    setWaveActive(false);
+                    currentUtterance = null;
+                };
+                utterance.onerror = () => {
+                    setWaveActive(false);
+                    currentUtterance = null;
+                };
+
+                // Небольшой таймаут после cancel() лечит баг молчания в некоторых версиях Chrome/Android
+                setTimeout(() => {
+                    window.speechSynthesis.speak(utterance);
+                }, 25);
+            } catch (err) {
+                console.warn('TTS error:', err);
+                setWaveActive(false);
+            }
+        }
+
+        function speakWord(text) {
+            speakText(text);
+        }
+
+        function speakSentence(sentence) {
+            speakText(sentence);
+        }
+
+        function toggleVoiceAccent() {
+            appState.ttsAccent = appState.ttsAccent === 'US' ? 'UK' : 'US';
+            updateTtsControlsUI();
+            saveState();
+            speakText(appState.ttsAccent === 'UK' ? 'British accent' : 'American accent');
+        }
+
+        function toggleVoiceRate() {
+            appState.ttsRate = appState.ttsRate > 0.85 ? 0.76 : 0.94;
+            updateTtsControlsUI();
+            saveState();
+        }
+
+        function updateTtsControlsUI() {
+            const btnAccent = document.getElementById('btnAccentToggle');
+            const btnRate = document.getElementById('btnRateToggle');
+            if (btnAccent) {
+                btnAccent.textContent = appState.ttsAccent === 'UK' ? '🇬🇧 UK' : '🇺🇸 US';
+            }
+            if (btnRate) {
+                btnRate.textContent = appState.ttsRate < 0.85 ? '0.8x' : '1.0x';
+            }
+        }
+
+        // Умная нормализация строковых ответов (регистр, пробелы, тире, сокращения, формы глаголов)
+        function normalizeAnswer(str) {
+            return (str || '')
+                .toLowerCase()
+                .replace(/[’‘`]/g, "'")
+                .replace(/[–—]/g, '-')
+                .replace(/\bwas not\b/g, "wasn't")
+                .replace(/\bwere not\b/g, "weren't")
+                .replace(/[.,!?]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // Загрузка сохраненного прогресса
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('linguaPracticeState_v2');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+                }
+            } catch (e) {
+                console.warn('Не удалось загрузить localStorage:', e);
+            }
+            updateTtsControlsUI();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('linguaPracticeState_v2', JSON.stringify(appState));
+            } catch (e) {
+                console.warn('Не удалось сохранить localStorage:', e);
+            }
+            updateGlobalProgressUI();
+        }
+
+        // Переключение главных вкладок (синхронизировано для Desktop и Mobile Bottom Nav)
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const targetSection = document.getElementById(`tab-${tabId}`);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            // Обновляем десктопные кнопки
+            document.querySelectorAll('#desktopNav .nav-btn').forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    btn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+
+            // Обновляем мобильный нижний бар
+            document.querySelectorAll('#mobileBottomNav .mobile-nav-btn').forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.classList.add('text-indigo-600', 'bg-indigo-50/80', 'font-bold');
+                    btn.classList.remove('text-slate-500', 'font-semibold');
+                } else {
+                    btn.classList.remove('text-indigo-600', 'bg-indigo-50/80', 'font-bold');
+                    btn.classList.add('text-slate-500', 'font-semibold');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (tabId === 'vocab') {
+                renderModuleFilters();
+                renderFlashcard();
+                renderWordList();
+            } else if (tabId === 'wordQuiz') {
+                startWordQuiz();
+            } else if (tabId === 'grammar') {
+                if (!document.getElementById('grammarPracticeView').classList.contains('hidden')) {
+                    renderGrammarQuestion();
+                }
+            } else if (tabId === 'exam') {
+                renderOverallDashboard();
+            }
+        }
+
+        // =====================================================================
+        // ЛОГИКА РАЗДЕЛА 1: СЛОВАРЬ И КАРТОЧКИ
+        // =====================================================================
+        let currentVocabModule = 'all';
+        let currentCardsDeck = [...WORDS_DATA];
+        let currentCardIdx = 0;
+        let isCardFlipped = false;
+        let cardDirection = 'en_ru';
+
+        function renderModuleFilters() {
+            const container = document.getElementById('moduleFilters');
+            const reviewCount = WORDS_DATA.filter(w => appState.wordStatus[w.id] === 'review').length;
+            const modules = [
+                { id: 'all', label: `Все (${WORDS_DATA.length})` },
+                { id: 'set5', label: 'Набор 5 (19)' },
+                { id: 'words4', label: 'Words 4 (15)' },
+                { id: 'words3', label: 'Words 3 (22)' },
+                { id: 'words2', label: 'Words 2 (23)' },
+                { id: 'words1', label: 'Words 1 (10)' },
+                { id: 'review', label: `🔁 Повторить (${reviewCount})` }
+            ];
+
+            container.innerHTML = modules.map(m => {
+                const active = currentVocabModule === m.id;
+                return `<button onclick="selectVocabModule('${m.id}')" class="min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                    active 
+                    ? 'bg-indigo-600 text-white shadow-sm' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }">${m.label}</button>`;
+            }).join('');
+        }
+
+        function selectVocabModule(modId) {
+            currentVocabModule = modId;
+            if (modId === 'all') {
+                currentCardsDeck = [...WORDS_DATA];
+            } else if (modId === 'review') {
+                currentCardsDeck = WORDS_DATA.filter(w => appState.wordStatus[w.id] === 'review');
+                if (currentCardsDeck.length === 0) {
+                    currentCardsDeck = [...WORDS_DATA];
+                    currentVocabModule = 'all';
+                }
+            } else {
+                currentCardsDeck = WORDS_DATA.filter(w => w.mod === modId);
+            }
+            currentCardIdx = 0;
+            isCardFlipped = false;
+            renderModuleFilters();
+            renderFlashcard();
+            renderWordList();
+        }
+
+        function setVocabView(view) {
+            const cardsEl = document.getElementById('vocabCardsContainer');
+            const listEl = document.getElementById('vocabListContainer');
+            const btnCards = document.getElementById('btnViewCards');
+            const btnList = document.getElementById('btnViewList');
+
+            if (view === 'cards') {
+                cardsEl.classList.remove('hidden');
+                listEl.classList.add('hidden');
+                btnCards.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-600 shadow-sm transition';
+                btnList.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition';
+            } else {
+                cardsEl.classList.add('hidden');
+                listEl.classList.remove('hidden');
+                btnList.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-600 shadow-sm transition';
+                btnCards.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition';
+                renderWordList();
+            }
+        }
+
+        function toggleCardDirection() {
+            cardDirection = cardDirection === 'en_ru' ? 'ru_en' : 'en_ru';
+            document.getElementById('btnCardDir').textContent = cardDirection === 'en_ru' ? '🇬🇧 EN ➔ 🇷🇺 RU' : '🇷🇺 RU ➔ 🇬🇧 EN';
+            isCardFlipped = false;
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            if (currentCardsDeck.length === 0) return;
+            if (currentCardIdx >= currentCardsDeck.length) currentCardIdx = 0;
+            const item = currentCardsDeck[currentCardIdx];
+            const inner = document.getElementById('flashcardInner');
+            if (isCardFlipped) {
+                inner.classList.add('rotate-y-180');
+            } else {
+                inner.classList.remove('rotate-y-180');
+            }
+
+            document.getElementById('cardCounter').textContent = `Карточка ${currentCardIdx + 1} из ${currentCardsDeck.length}`;
+            document.getElementById('cardModuleBadge').textContent = VOCAB_MODULES[item.mod].shortName;
+
+            const status = appState.wordStatus[item.id];
+            const statusBadge = document.getElementById('cardStatusBadge');
+            if (status === 'known') {
+                statusBadge.textContent = '✅ Изучено';
+                statusBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700';
+            } else if (status === 'review') {
+                statusBadge.textContent = '🔁 Повторить';
+                statusBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800';
+            } else {
+                statusBadge.textContent = 'Новое слово';
+                statusBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500';
+            }
+
+            if (cardDirection === 'en_ru') {
+                document.getElementById('cardFrontText').textContent = item.en;
+                document.getElementById('cardFrontSub').textContent = item.hint;
+                document.getElementById('cardBackText').textContent = item.ru;
+                document.getElementById('cardBackSub').textContent = item.en;
+            } else {
+                document.getElementById('cardFrontText').textContent = item.ru;
+                document.getElementById('cardFrontSub').textContent = 'Вспомните перевод на английский';
+                document.getElementById('cardBackText').textContent = item.en;
+                document.getElementById('cardBackSub').textContent = item.hint;
+            }
+        }
+
+        function flipCard() {
+            isCardFlipped = !isCardFlipped;
+            renderFlashcard();
+        }
+
+        function speakCurrentCard() {
+            const item = currentCardsDeck[currentCardIdx];
+            if (item) speakWord(item.en);
+        }
+
+        function nextCard() {
+            isCardFlipped = false;
+            currentCardIdx = (currentCardIdx + 1) % currentCardsDeck.length;
+            renderFlashcard();
+        }
+
+        function prevCard() {
+            isCardFlipped = false;
+            currentCardIdx = (currentCardIdx - 1 + currentCardsDeck.length) % currentCardsDeck.length;
+            renderFlashcard();
+        }
+
+        function shuffleCards() {
+            for (let i = currentCardsDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentCardsDeck[i], currentCardsDeck[j]] = [currentCardsDeck[j], currentCardsDeck[i]];
+            }
+            currentCardIdx = 0;
+            isCardFlipped = false;
+            renderFlashcard();
+        }
+
+        function markCardStatus(status) {
+            const item = currentCardsDeck[currentCardIdx];
+            if (!item) return;
+            appState.wordStatus[item.id] = status;
+            saveState();
+            renderModuleFilters();
+
+            // Проверяем, не освоил ли Саша все слова в текущей колоде
+            const allKnownInDeck = currentCardsDeck.every(w => appState.wordStatus[w.id] === 'known');
+
+            if (currentVocabModule === 'review' && status === 'known') {
+                currentCardsDeck = WORDS_DATA.filter(w => appState.wordStatus[w.id] === 'review');
+                if (currentCardsDeck.length === 0) {
+                    triggerSashaPraise('Ты повторил все слова из списка повторения, Саша!');
+                    selectVocabModule('all');
+                    return;
+                }
+                currentCardIdx = currentCardIdx % currentCardsDeck.length;
+                isCardFlipped = false;
+                renderFlashcard();
+            } else {
+                if (allKnownInDeck && status === 'known') {
+                    triggerSashaPraise('Все слова в этой колоде отмечены как «Знаю»!');
+                }
+                nextCard();
+            }
+        }
+
+        function renderWordList() {
+            const query = (document.getElementById('vocabSearchInput')?.value || '').toLowerCase().trim();
+            const filtered = currentCardsDeck.filter(w => 
+                w.en.toLowerCase().includes(query) || w.ru.toLowerCase().includes(query)
+            );
+            document.getElementById('listCountBadge').textContent = `Показано: ${filtered.length} слов`;
+
+            const tbody = document.getElementById('wordTableBody');
+            tbody.innerHTML = filtered.map(w => {
+                const st = appState.wordStatus[w.id];
+                const badge = st === 'known' 
+                    ? '<span class="inline-block px-2.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Знаю</span>'
+                    : st === 'review'
+                    ? '<span class="inline-block px-2.5 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Повторить</span>'
+                    : '<span class="inline-block px-2.5 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-500">—</span>';
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3 px-3 sm:px-4 font-bold text-slate-900">
+                            <div class="flex items-center gap-2">
+                                <button onclick="speakWord('${w.en.replace(/'/g, "\\'")}')" class="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs transition shrink-0" title="Озвучить">🔊</button>
+                                <span>${w.en}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-xs text-slate-500 hidden sm:table-cell">${w.hint}</td>
+                        <td class="py-3 px-3 sm:px-4 text-slate-700 font-medium">${w.ru}</td>
+                        <td class="py-3 px-4 hidden md:table-cell">
+                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs font-semibold">${VOCAB_MODULES[w.mod].shortName}</span>
+                        </td>
+                        <td class="py-3 px-3 sm:px-4 text-right">
+                            <button onclick="toggleListWordStatus('${w.id}')" class="min-h-[36px]">${badge}</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleListWordStatus(id) {
+            const cur = appState.wordStatus[id];
+            appState.wordStatus[id] = cur === 'known' ? 'review' : 'known';
+            saveState();
+            renderModuleFilters();
+            renderWordList();
+            if (currentCardsDeck.length > 0 && currentCardsDeck.every(w => appState.wordStatus[w.id] === 'known')) {
+                triggerSashaPraise('Супер! Все слова в выбранном наборе выучены!');
+            }
+        }
+
+        // УЛУЧШЕННЫЙ ВЫБОР ДИСТРАКТОРОВ (A0+): исключает синонимы, дубликаты слов и пересекающиеся значения
+        const CONFLICT_GROUPS = [
+            ['laugh', 'смеяться'],
+            ['under', 'под'],
+            ['go – went', 'go - went', 'идти – ходил', 'ходить – ходил'],
+            ['win – won', 'win - won', 'выигрывать – выиграл', 'побеждать, выигрывать'],
+            ['write', 'write – wrote', 'write - wrote', 'писать', 'писать – писал'],
+            ['see', 'see – saw', 'see - saw', 'видеть', 'видеть – видел'],
+            ['who', 'кто'],
+            ['when', 'когда'],
+            ['was', 'был', 'i was born', 'я родился'],
+            ['were', 'были'],
+            ['make – made', 'make - made', 'create', 'do sport', 'work', 'делать – сделал', 'создавать', 'заниматься спортом', 'работать'],
+            ['walk', 'гулять'],
+            ['eat – ate', 'eat - ate', 'drink', 'есть – ел', 'пить']
+        ];
+
+        function getConflictingTexts(word) {
+            const blocked = new Set([
+                word.en.toLowerCase(),
+                word.ru.toLowerCase()
+            ]);
+            const candidates = [word.en.toLowerCase(), word.ru.toLowerCase()];
+
+            CONFLICT_GROUPS.forEach(group => {
+                const lowerGroup = group.map(item => item.toLowerCase());
+                if (candidates.some(c => lowerGroup.includes(c))) {
+                    lowerGroup.forEach(item => blocked.add(item));
+                }
+            });
+
+            return blocked;
+        }
+
+        function pickUniqueDistractors(targetWord, count = 3) {
+            const blocked = getConflictingTexts(targetWord);
+            const usedEn = new Set([targetWord.en.toLowerCase()]);
+            const usedRu = new Set([targetWord.ru.toLowerCase()]);
+            const shuffled = [...WORDS_DATA].sort(() => Math.random() - 0.5);
+            const result = [];
+
+            // Сначала строго отбираем слова вне конфликтных групп и без одинаковых переводов
+            for (const candidate of shuffled) {
+                const enLow = candidate.en.toLowerCase();
+                const ruLow = candidate.ru.toLowerCase();
+                if (!blocked.has(enLow) && !blocked.has(ruLow) && !usedEn.has(enLow) && !usedRu.has(ruLow)) {
+                    usedEn.add(enLow);
+                    usedRu.add(ruLow);
+                    result.push(candidate);
+                    if (result.length === count) return result;
+                }
+            }
+
+            // Запасной проход только если вариантов не хватило
+            for (const candidate of shuffled) {
+                const enLow = candidate.en.toLowerCase();
+                const ruLow = candidate.ru.toLowerCase();
+                if (!usedEn.has(enLow) && !usedRu.has(ruLow)) {
+                    usedEn.add(enLow);
+                    usedRu.add(ruLow);
+                    result.push(candidate);
+                    if (result.length === count) return result;
+                }
+            }
+            return result;
+        }
+
+        // =====================================================================
+        // ЛОГИКА РАЗДЕЛА 2: ТРЕНАЖЕР СЛОВ (КВИЗ И ПИСЬМО)
+        // =====================================================================
+        let wqQuestions = [];
+        let wqCurrentIdx = 0;
+        let wqScore = 0;
+        let wqMistakes = [];
+        let currentWqItem = null;
+        let wqAnswered = false;
+
+        function startWordQuiz() {
+            const mod = document.getElementById('quizModuleSelect').value;
+            let pool = [];
+            if (mod === 'all') pool = [...WORDS_DATA];
+            else if (mod === 'mistakes') {
+                pool = WORDS_DATA.filter(w => appState.wordStatus[w.id] === 'review');
+                if (pool.length === 0) pool = [...WORDS_DATA];
+            } else {
+                pool = WORDS_DATA.filter(w => w.mod === mod);
+            }
+
+            pool.sort(() => Math.random() - 0.5);
+            wqQuestions = pool.slice(0, Math.min(10, pool.length));
+            wqCurrentIdx = 0;
+            wqScore = 0;
+            wqMistakes = [];
+
+            document.getElementById('wordQuizArea').classList.remove('hidden');
+            document.getElementById('wordQuizSummary').classList.add('hidden');
+            renderWordQuizQuestion();
+        }
+
+        function renderWordQuizQuestion() {
+            wqAnswered = false;
+            currentWqItem = wqQuestions[wqCurrentIdx];
+            const mode = document.getElementById('quizModeSelect').value;
+
+            document.getElementById('wqProgressText').textContent = `Слово ${wqCurrentIdx + 1} из ${wqQuestions.length}`;
+            document.getElementById('wqScoreText').textContent = `Верно: ${wqScore}`;
+            document.getElementById('wqProgressBar').style.width = `${((wqCurrentIdx + 1) / wqQuestions.length) * 100}%`;
+            document.getElementById('wqModuleLabel').textContent = VOCAB_MODULES[currentWqItem.mod].shortName;
+            document.getElementById('wqNextBtn').classList.add('hidden');
+
+            const optionsGrid = document.getElementById('wqOptionsGrid');
+            const typingBox = document.getElementById('wqTypingBox');
+            const speakBtn = document.getElementById('wqSpeakBtn');
+
+            if (mode === 'typing') {
+                optionsGrid.classList.add('hidden');
+                typingBox.classList.remove('hidden');
+                speakBtn.classList.add('hidden');
+                document.getElementById('wqQuestionWord').textContent = currentWqItem.ru;
+                document.getElementById('wqHintText').textContent = 'Напиши английское слово (уровень A0+)';
+                document.getElementById('wqGentleHintText').textContent = '';
+                const inp = document.getElementById('wqTypeInput');
+                inp.value = '';
+                inp.disabled = false;
+                document.getElementById('wqTypeSubmitBtn').disabled = false;
+                document.getElementById('wqTypingFeedback').classList.add('hidden');
+                setTimeout(() => inp.focus(), 60);
+            } else {
+                optionsGrid.classList.remove('hidden');
+                typingBox.classList.add('hidden');
+                const isEnToRu = mode === 'choice_en_ru';
+                speakBtn.classList.toggle('hidden', !isEnToRu);
+
+                document.getElementById('wqQuestionWord').textContent = isEnToRu ? currentWqItem.en : currentWqItem.ru;
+                document.getElementById('wqHintText').textContent = isEnToRu ? 'Выбери один правильный перевод' : 'Выбери одно правильное слово';
+
+                const others = pickUniqueDistractors(currentWqItem, 3);
+                const choices = [currentWqItem, ...others].sort(() => Math.random() - 0.5);
+
+                optionsGrid.innerHTML = choices.map(ch => {
+                    const label = isEnToRu ? ch.ru : ch.en;
+                    return `<button onclick="handleWqChoice('${ch.id}', this)" class="wq-opt-btn min-h-[52px] p-3.5 sm:p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-indigo-400 active:bg-indigo-50 text-left font-bold text-slate-800 transition text-sm sm:text-base">
+                        ${label}
+                    </button>`;
+                }).join('');
+            }
+        }
+
+        function showWqGentleHint() {
+            if (!currentWqItem || wqAnswered) return;
+            const cleanFirst = currentWqItem.en.trim().charAt(0).toUpperCase();
+            document.getElementById('wqGentleHintText').textContent = `Начинается на «${cleanFirst}»`;
+        }
+
+        function handleWqChoice(selectedId, btnEl) {
+            if (wqAnswered) return;
+            wqAnswered = true;
+            const isCorrect = selectedId === currentWqItem.id;
+            const allBtns = document.querySelectorAll('.wq-opt-btn');
+
+            allBtns.forEach(b => {
+                b.disabled = true;
+                if (b.textContent.trim() === currentWqItem.ru || b.textContent.trim() === currentWqItem.en) {
+                    b.classList.remove('border-slate-200', 'bg-white');
+                    b.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900');
+                }
+            });
+
+            if (isCorrect) {
+                wqScore++;
+                appState.wordStatus[currentWqItem.id] = 'known';
+                speakWord(currentWqItem.en);
+            } else {
+                btnEl.classList.remove('border-slate-200', 'bg-white');
+                btnEl.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900');
+                appState.wordStatus[currentWqItem.id] = 'review';
+                wqMistakes.push(currentWqItem);
+            }
+            saveState();
+            document.getElementById('wqScoreText').textContent = `Верно: ${wqScore}`;
+            document.getElementById('wqNextBtn').classList.remove('hidden');
+        }
+
+        function checkTypedWord() {
+            if (wqAnswered) return;
+            const inp = document.getElementById('wqTypeInput');
+            const userNorm = normalizeAnswer(inp.value);
+            if (!userNorm) return;
+
+            wqAnswered = true;
+            inp.disabled = true;
+            document.getElementById('wqTypeSubmitBtn').disabled = true;
+
+            const targetNorm = normalizeAnswer(currentWqItem.en);
+            const targetNoDash = targetNorm.replace(/-/g, ' ').replace(/\s+/g, ' ');
+            const targetFirstForm = targetNorm.split('-')[0].trim();
+            const targetNoParens = targetNorm.replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
+
+            const isCorrect =
+                userNorm === targetNorm ||
+                userNorm === targetNoDash ||
+                userNorm === targetFirstForm ||
+                userNorm === targetNoParens;
+
+            const fb = document.getElementById('wqTypingFeedback');
+            fb.classList.remove('hidden');
+
+            if (isCorrect) {
+                wqScore++;
+                appState.wordStatus[currentWqItem.id] = 'known';
+                fb.className = 'p-4 rounded-xl text-sm font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800';
+                fb.innerHTML = `✅ Отлично! Правильный ответ: <b>${currentWqItem.en}</b>`;
+                speakWord(currentWqItem.en);
+            } else {
+                appState.wordStatus[currentWqItem.id] = 'review';
+                wqMistakes.push(currentWqItem);
+                fb.className = 'p-4 rounded-xl text-sm font-semibold bg-rose-50 border border-rose-200 text-rose-800';
+                fb.innerHTML = `❌ Ошибка. Правильное написание: <b>${currentWqItem.en}</b>`;
+            }
+            saveState();
+            document.getElementById('wqScoreText').textContent = `Верно: ${wqScore}`;
+            document.getElementById('wqNextBtn').classList.remove('hidden');
+        }
+
+        // Поддержка клавиши Enter на мобильной и десктопной клавиатуре в тренажере слов
+        document.getElementById('wqTypeInput')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!wqAnswered) {
+                    checkTypedWord();
+                } else {
+                    nextWordQuizQuestion();
+                }
+            }
+        });
+
+        function nextWordQuizQuestion() {
+            wqCurrentIdx++;
+            if (wqCurrentIdx < wqQuestions.length) {
+                renderWordQuizQuestion();
+            } else {
+                showWordQuizSummary();
+            }
+        }
+
+        function showWordQuizSummary() {
+            document.getElementById('wordQuizArea').classList.add('hidden');
+            document.getElementById('wordQuizSummary').classList.remove('hidden');
+            const pct = Math.round((wqScore / wqQuestions.length) * 100);
+            document.getElementById('wqSummaryStats').textContent = `Ты правильно ответил на ${wqScore} из ${wqQuestions.length} слов (${pct}%).`;
+
+            const mBox = document.getElementById('wqMistakesList');
+            const mUl = document.getElementById('wqMistakesUl');
+            if (wqMistakes.length > 0) {
+                mBox.classList.remove('hidden');
+                mUl.innerHTML = wqMistakes.map(m => `<li><b>${m.en}</b> — ${m.ru}</li>`).join('');
+            } else {
+                mBox.classList.add('hidden');
+            }
+
+            if (pct >= 60) {
+                document.getElementById('wqSummaryHeading').textContent = 'Good job, Sasha!';
+                triggerSashaPraise(`Раунд слов пройден на ${pct}% — отличный результат, Саша!`);
+            } else {
+                document.getElementById('wqSummaryHeading').textContent = 'Nice try, Sasha!';
+            }
+        }
+
+        // =====================================================================
+        // ЛОГИКА РАЗДЕЛА 3: PAST CONTINUOUS (ТЕОРИЯ + ПРАКТИКА)
+        // =====================================================================
+        let gpIdx = 0;
+        let gpScore = 0;
+        let gpAnswered = false;
+        let scrambleSelected = [];
+        let scramblePool = [];
+
+        function setGrammarMode(mode) {
+            const theoryEl = document.getElementById('grammarTheoryView');
+            const pracEl = document.getElementById('grammarPracticeView');
+            const btnT = document.getElementById('btnGrammarTheory');
+            const btnP = document.getElementById('btnGrammarPractice');
+
+            if (mode === 'theory') {
+                theoryEl.classList.remove('hidden');
+                pracEl.classList.add('hidden');
+                btnT.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-600 shadow-sm transition';
+                btnP.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition';
+            } else {
+                theoryEl.classList.add('hidden');
+                pracEl.classList.remove('hidden');
+                btnP.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-600 shadow-sm transition';
+                btnT.className = 'min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition';
+                renderGrammarQuestion();
+            }
+        }
+
+        function resetGrammarPractice() {
+            gpIdx = 0;
+            gpScore = 0;
+            document.getElementById('gpTaskContainer').classList.remove('hidden');
+            document.getElementById('gpSummaryContainer').classList.add('hidden');
+            renderGrammarQuestion();
+        }
+
+        function renderGrammarQuestion() {
+            gpAnswered = false;
+            const task = GRAMMAR_TASKS[gpIdx];
+
+            document.getElementById('gpProgressText').textContent = `Задание ${gpIdx + 1} из ${GRAMMAR_TASKS.length}`;
+            document.getElementById('gpScoreText').textContent = `Верно: ${gpScore}`;
+            document.getElementById('gpProgressBar').style.width = `${((gpIdx + 1) / GRAMMAR_TASKS.length) * 100}%`;
+
+            document.getElementById('gpTypeBadge').textContent = task.typeLabel;
+            document.getElementById('gpPromptText').textContent = task.prompt;
+            document.getElementById('gpTranslationHint').textContent = task.ruHint;
+
+            const optBox = document.getElementById('gpOptionsBox');
+            const inpBox = document.getElementById('gpInputBox');
+            const scrBox = document.getElementById('gpScrambleBox');
+            const expBox = document.getElementById('gpExplanationBox');
+            const nextBtn = document.getElementById('gpNextBtn');
+
+            optBox.classList.add('hidden');
+            inpBox.classList.add('hidden');
+            scrBox.classList.add('hidden');
+            expBox.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+
+            if (task.type === 'choice' || task.type === 'error_fix') {
+                optBox.classList.remove('hidden');
+                const shuffled = [...task.options].sort(() => Math.random() - 0.5);
+                optBox.innerHTML = shuffled.map(opt => `
+                    <button onclick="checkGrammarChoice('${opt.replace(/'/g, "\\'")}', this)" class="gp-opt-btn min-h-[52px] p-3.5 sm:p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-indigo-400 active:bg-indigo-50 text-left font-bold text-slate-800 transition text-sm sm:text-base">
+                        ${opt}
+                    </button>
+                `).join('');
+            } else if (task.type === 'fill_in') {
+                inpBox.classList.remove('hidden');
+                const inp = document.getElementById('gpTextInput');
+                inp.value = '';
+                inp.disabled = false;
+                document.getElementById('gpInputSubmitBtn').disabled = false;
+                setTimeout(() => inp.focus(), 60);
+            } else if (task.type === 'scramble') {
+                scrBox.classList.remove('hidden');
+                scrambleSelected = [];
+                scramblePool = task.words.map((w, i) => ({ id: i, text: w, used: false })).sort(() => Math.random() - 0.5);
+                document.getElementById('gpScrambleSubmitBtn').disabled = false;
+                renderScrambleUI();
+            }
+        }
+
+        function checkGrammarChoice(selected, btnEl) {
+            if (gpAnswered) return;
+            gpAnswered = true;
+            const task = GRAMMAR_TASKS[gpIdx];
+            const isCorrect = selected === task.answer;
+
+            document.querySelectorAll('.gp-opt-btn').forEach(b => {
+                b.disabled = true;
+                if (b.textContent.trim() === task.answer) {
+                    b.classList.remove('border-slate-200', 'bg-white');
+                    b.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900');
+                }
+            });
+
+            if (!isCorrect) {
+                btnEl.classList.remove('border-slate-200', 'bg-white');
+                btnEl.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900');
+            } else {
+                gpScore++;
+            }
+
+            showGrammarExplanation(isCorrect, task);
+        }
+
+        function checkGrammarInput() {
+            if (gpAnswered) return;
+            const inp = document.getElementById('gpTextInput');
+            const valNorm = normalizeAnswer(inp.value);
+            if (!valNorm) return;
+
+            gpAnswered = true;
+            inp.disabled = true;
+            document.getElementById('gpInputSubmitBtn').disabled = true;
+
+            const task = GRAMMAR_TASKS[gpIdx];
+            const isCorrect = valNorm === normalizeAnswer(task.answer);
+            if (isCorrect) gpScore++;
+            showGrammarExplanation(isCorrect, task);
+        }
+
+        document.getElementById('gpTextInput')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!gpAnswered) {
+                    checkGrammarInput();
+                } else {
+                    nextGrammarQuestion();
+                }
+            }
+        });
+
+        function renderScrambleUI() {
+            const ansArea = document.getElementById('gpScrambleAnswerArea');
+            const bankArea = document.getElementById('gpScrambleBankArea');
+
+            if (scrambleSelected.length === 0) {
+                ansArea.innerHTML = '<span class="text-xs text-indigo-400">Нажимайте на слова ниже, чтобы собрать предложение...</span>';
+            } else {
+                ansArea.innerHTML = scrambleSelected.map((item, idx) => `
+                    <button onclick="removeScrambleWord(${idx})" class="min-h-[40px] px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold text-sm shadow-sm hover:bg-indigo-700 active:bg-indigo-800 transition">
+                        ${item.text}
+                    </button>
+                `).join('');
+            }
+
+            bankArea.innerHTML = scramblePool.map(item => `
+                <button onclick="pickScrambleWord(${item.id})" ${item.used ? 'disabled' : ''} class="min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-300 font-semibold text-sm transition ${
+                    item.used ? 'opacity-30 bg-slate-100 cursor-not-allowed' : 'bg-white hover:border-indigo-400 active:bg-indigo-50 text-slate-800 shadow-sm'
+                }">
+                    ${item.text}
+                </button>
+            `).join('');
+        }
+
+        function pickScrambleWord(id) {
+            if (gpAnswered) return;
+            const item = scramblePool.find(x => x.id === id);
+            if (item && !item.used) {
+                item.used = true;
+                scrambleSelected.push(item);
+                renderScrambleUI();
+            }
+        }
+
+        function removeScrambleWord(selIdx) {
+            if (gpAnswered) return;
+            const removed = scrambleSelected.splice(selIdx, 1)[0];
+            if (removed) {
+                const poolItem = scramblePool.find(x => x.id === removed.id);
+                if (poolItem) poolItem.used = false;
+                renderScrambleUI();
+            }
+        }
+
+        function resetScramble() {
+            if (gpAnswered) return;
+            scrambleSelected = [];
+            scramblePool.forEach(x => x.used = false);
+            renderScrambleUI();
+        }
+
+        function checkScrambleAnswer() {
+            if (gpAnswered || scrambleSelected.length === 0) return;
+            gpAnswered = true;
+            document.getElementById('gpScrambleSubmitBtn').disabled = true;
+
+            const task = GRAMMAR_TASKS[gpIdx];
+            const userSentence = scrambleSelected.map(x => x.text).join(' ');
+            const isCorrect = normalizeAnswer(userSentence) === normalizeAnswer(task.answer);
+            if (isCorrect) gpScore++;
+
+            showGrammarExplanation(isCorrect, task);
+        }
+
+        function showGrammarExplanation(isCorrect, task) {
+            const expBox = document.getElementById('gpExplanationBox');
+            expBox.classList.remove('hidden');
+            const safeSentence = (task.fullSentence || task.answer).replace(/'/g, "\\'");
+
+            if (isCorrect) {
+                expBox.className = 'p-4 rounded-xl text-sm border bg-emerald-50 border-emerald-200 text-emerald-900 space-y-2';
+                expBox.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div><b>✅ Верно!</b> ${task.explanation}</div>
+                        <button onclick="speakSentence('${safeSentence}')" class="min-w-[40px] min-h-[40px] rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 flex items-center justify-center shrink-0" title="Озвучить предложение">🔊</button>
+                    </div>`;
+                speakSentence(task.fullSentence || task.answer);
+            } else {
+                expBox.className = 'p-4 rounded-xl text-sm border bg-rose-50 border-rose-200 text-rose-900 space-y-2';
+                expBox.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <b>❌ Неверно.</b> Правильный ответ: <span class="underline font-bold">${task.answer}</span>.<br>
+                            <span class="text-xs mt-1 block">${task.explanation}</span>
+                        </div>
+                        <button onclick="speakSentence('${safeSentence}')" class="min-w-[40px] min-h-[40px] rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 flex items-center justify-center shrink-0" title="Озвучить правильный вариант">🔊</button>
+                    </div>`;
+            }
+            document.getElementById('gpScoreText').textContent = `Верно: ${gpScore}`;
+            document.getElementById('gpNextBtn').classList.remove('hidden');
+        }
+
+        function nextGrammarQuestion() {
+            gpIdx++;
+            if (gpIdx < GRAMMAR_TASKS.length) {
+                renderGrammarQuestion();
+            } else {
+                document.getElementById('gpTaskContainer').classList.add('hidden');
+                document.getElementById('gpSummaryContainer').classList.remove('hidden');
+                const pct = Math.round((gpScore / GRAMMAR_TASKS.length) * 100);
+                document.getElementById('gpSummaryText').textContent = `Твой результат: ${gpScore} из ${GRAMMAR_TASKS.length} заданий (${pct}%).`;
+
+                if (pct >= 60) {
+                    document.getElementById('gpSummaryHeading').textContent = 'Good job, Sasha!';
+                    triggerSashaPraise(`Past Continuous выполнен на ${pct}% — great job, Sasha!`);
+                } else {
+                    document.getElementById('gpSummaryHeading').textContent = 'Keep practicing, Sasha!';
+                }
+            }
+        }
+
+        // =====================================================================
+        // ЛОГИКА РАЗДЕЛА 4: ИТОГОВЫЙ ЭКЗАМЕН И ЧЕТКИЙ РЕЗУЛЬТАТ
+        // =====================================================================
+        let examQueue = [];
+        let examIdx = 0;
+        let examUserAnswers = [];
+        let examLocked = false;
+
+        function buildExamQuestions(onlyMistakes = false) {
+            if (onlyMistakes && appState.lastExamResult && appState.lastExamResult.mistakes.length > 0) {
+                return appState.lastExamResult.mistakes.map(m => m.q);
+            }
+
+            const questions = [];
+            const countsPerMod = { set5: 4, words4: 3, words3: 4, words2: 4, words1: 2 };
+
+            Object.keys(countsPerMod).forEach(modKey => {
+                const modWords = WORDS_DATA.filter(w => w.mod === modKey).sort(() => Math.random() - 0.5);
+                const selected = modWords.slice(0, countsPerMod[modKey]);
+
+                selected.forEach((w, i) => {
+                    const enToRu = i % 2 === 0;
+                    const distractors = pickUniqueDistractors(w, 3);
+                    const opts = [w, ...distractors].sort(() => Math.random() - 0.5).map(x => enToRu ? x.ru : x.en);
+
+                    questions.push({
+                        category: modKey,
+                        categoryName: VOCAB_MODULES[modKey].shortName,
+                        subPrompt: enToRu ? 'Выберите перевод слова' : 'Как это переводится на английский?',
+                        mainPrompt: enToRu ? w.en : w.ru,
+                        options: opts,
+                        answer: enToRu ? w.ru : w.en,
+                        wordId: w.id
+                    });
+                });
+            });
+
+            const pcChoiceTasks = GRAMMAR_TASKS.filter(t => t.type === 'choice' || t.type === 'error_fix')
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 8);
+
+            pcChoiceTasks.forEach(t => {
+                questions.push({
+                    category: 'past_cont',
+                    categoryName: 'Past Continuous',
+                    subPrompt: t.typeLabel,
+                    mainPrompt: t.prompt,
+                    options: [...t.options].sort(() => Math.random() - 0.5),
+                    answer: t.answer,
+                    explanation: t.explanation
+                });
+            });
+
+            return questions.sort(() => Math.random() - 0.5);
+        }
+
+        function startFinalExam(onlyMistakes = false) {
+            examQueue = buildExamQuestions(onlyMistakes);
+            examIdx = 0;
+            examUserAnswers = [];
+            examLocked = false;
+
+            document.getElementById('examResultReport').classList.add('hidden');
+            document.getElementById('examActiveBox').classList.remove('hidden');
+            renderExamQuestion();
+        }
+
+        function renderExamQuestion() {
+            examLocked = false;
+            const q = examQueue[examIdx];
+
+            document.getElementById('examQCounter').textContent = `Вопрос ${examIdx + 1} из ${examQueue.length}`;
+            document.getElementById('examCategoryBadge').textContent = q.categoryName;
+            document.getElementById('examProgressBar').style.width = `${((examIdx + 1) / examQueue.length) * 100}%`;
+            document.getElementById('examSubPrompt').textContent = q.subPrompt;
+            document.getElementById('examMainPrompt').textContent = q.mainPrompt;
+
+            const container = document.getElementById('examOptionsContainer');
+            container.innerHTML = q.options.map(opt => `
+                <button onclick="submitExamAnswer('${opt.replace(/'/g, "\\'")}', this)" class="exam-opt-btn min-h-[52px] p-3.5 sm:p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-indigo-500 active:bg-indigo-50 text-left font-bold text-slate-800 transition text-sm sm:text-base">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function submitExamAnswer(selected, btnEl) {
+            if (examLocked) return;
+            examLocked = true;
+            const q = examQueue[examIdx];
+            const isCorrect = selected === q.answer;
+
+            document.querySelectorAll('.exam-opt-btn').forEach(b => {
+                b.disabled = true;
+                if (b.textContent.trim() === q.answer) {
+                    b.classList.remove('border-slate-200', 'bg-white');
+                    b.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900');
+                }
+            });
+
+            if (!isCorrect) {
+                btnEl.classList.remove('border-slate-200', 'bg-white');
+                btnEl.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900');
+                if (q.wordId) appState.wordStatus[q.wordId] = 'review';
+            } else {
+                if (q.wordId) appState.wordStatus[q.wordId] = 'known';
+            }
+
+            examUserAnswers.push({ q, userAnswer: selected, isCorrect });
+
+            setTimeout(() => {
+                examIdx++;
+                if (examIdx < examQueue.length) {
+                    renderExamQuestion();
+                } else {
+                    finishFinalExam();
+                }
+            }, 600);
+        }
+
+        function finishFinalExam() {
+            document.getElementById('examActiveBox').classList.add('hidden');
+
+            const total = examUserAnswers.length;
+            const correct = examUserAnswers.filter(x => x.isCorrect).length;
+            const percent = Math.round((correct / total) * 100);
+            const mistakes = examUserAnswers.filter(x => !x.isCorrect);
+
+            const categories = [
+                { key: 'set5', name: 'Набор 5 (Основные)' },
+                { key: 'words4', name: 'Words 4' },
+                { key: 'words3', name: 'Words 3' },
+                { key: 'words2', name: 'Words 2' },
+                { key: 'words1', name: 'Words 1' },
+                { key: 'past_cont', name: 'Past Continuous' }
+            ];
+
+            const breakdown = categories.map(cat => {
+                const items = examUserAnswers.filter(x => x.q.category === cat.key);
+                const ok = items.filter(x => x.isCorrect).length;
+                return {
+                    key: cat.key,
+                    name: cat.name,
+                    correct: ok,
+                    total: items.length,
+                    percent: items.length > 0 ? Math.round((ok / items.length) * 100) : null
+                };
+            });
+
+            appState.lastExamResult = {
+                total,
+                correct,
+                percent,
+                breakdown,
+                mistakes
+            };
+            saveState();
+            renderExamResultReport();
+            renderOverallDashboard();
+        }
+
+        function renderExamResultReport() {
+            const res = appState.lastExamResult;
+            if (!res) return;
+
+            const reportBox = document.getElementById('examResultReport');
+            reportBox.classList.remove('hidden');
+
+            const circle = document.getElementById('examScoreCircle');
+            const gradeBadge = document.getElementById('examGradeBadge');
+            const title = document.getElementById('examVerdictTitle');
+            const desc = document.getElementById('examVerdictDesc');
+
+            document.getElementById('examPercentText').textContent = `${res.percent}%`;
+            desc.textContent = `Правильных ответов: ${res.correct} из ${res.total}.`;
+
+            if (res.percent >= 85) {
+                circle.className = 'w-20 h-20 sm:w-24 sm:h-24 rounded-full border-8 border-emerald-500 flex flex-col items-center justify-center bg-white shadow-sm shrink-0';
+                gradeBadge.className = 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800';
+                gradeBadge.textContent = 'Оценка: Отлично (5)';
+                title.textContent = 'Good job, Sasha! Блестящий результат!';
+                triggerSashaPraise(`Итоговый тест сдан на ${res.percent}% — good job, Sasha!`);
+            } else if (res.percent >= 65) {
+                circle.className = 'w-20 h-20 sm:w-24 sm:h-24 rounded-full border-8 border-indigo-500 flex flex-col items-center justify-center bg-white shadow-sm shrink-0';
+                gradeBadge.className = 'px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800';
+                gradeBadge.textContent = 'Оценка: Хорошо (4)';
+                title.textContent = 'Good job, Sasha! Хороший уровень!';
+                triggerSashaPraise(`Тест пройден на ${res.percent}% — great job, Sasha!`);
+            } else {
+                circle.className = 'w-20 h-20 sm:w-24 sm:h-24 rounded-full border-8 border-amber-500 flex flex-col items-center justify-center bg-white shadow-sm shrink-0';
+                gradeBadge.className = 'px-3 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800';
+                gradeBadge.textContent = 'Нужно повторить материал';
+                title.textContent = 'Давай повторим слова и Past Continuous, Саша';
+            }
+
+            const hasMistakes = res.mistakes && res.mistakes.length > 0;
+            document.getElementById('btnRetryExamMistakes').classList.toggle('hidden', !hasMistakes);
+            document.getElementById('reportRetryMistakesBtn').classList.toggle('hidden', !hasMistakes);
+
+            const grid = document.getElementById('examBreakdownGrid');
+            grid.innerHTML = res.breakdown.map(b => {
+                if (b.total === 0) return '';
+                const barColor = b.percent >= 80 ? 'bg-emerald-500' : b.percent >= 50 ? 'bg-indigo-500' : 'bg-rose-500';
+                return `
+                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-sm text-slate-800">${b.name}</span>
+                            <span class="text-xs font-extrabold text-slate-700">${b.correct}/${b.total} (${b.percent}%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="${barColor} h-full rounded-full" style="width: ${b.percent}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const mSection = document.getElementById('examMistakesSection');
+            const mContainer = document.getElementById('examMistakesContainer');
+            if (!hasMistakes) {
+                mSection.classList.add('hidden');
+            } else {
+                mSection.classList.remove('hidden');
+                mContainer.innerHTML = res.mistakes.map(m => `
+                    <div class="p-4 rounded-xl bg-rose-50/70 border border-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase px-2 py-0.5 rounded bg-white text-slate-600 border border-slate-200 mr-2">${m.q.categoryName}</span>
+                            <span class="font-bold text-slate-900">${m.q.mainPrompt}</span>
+                            ${m.q.explanation ? `<p class="text-xs text-slate-600 mt-1">${m.q.explanation}</p>` : ''}
+                        </div>
+                        <div class="text-xs sm:text-right shrink-0 space-y-0.5">
+                            <div class="text-rose-700 line-through">Ваш ответ: ${m.userAnswer}</div>
+                            <div class="text-emerald-700 font-bold">Правильно: ${m.q.answer}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderOverallDashboard() {
+            renderExamResultReport();
+            const container = document.getElementById('overallModulesProgress');
+            container.innerHTML = Object.values(VOCAB_MODULES).map(mod => {
+                const modWords = WORDS_DATA.filter(w => w.mod === mod.id);
+                const knownCount = modWords.filter(w => appState.wordStatus[w.id] === 'known').length;
+                const pct = Math.round((knownCount / modWords.length) * 100);
+
+                return `
+                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-sm text-slate-900">${mod.shortName}</span>
+                            <span class="text-xs font-extrabold text-indigo-600">${pct}%</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="bg-indigo-600 h-full transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                        <p class="text-xs text-slate-500">Выучено: <b>${knownCount}</b> из ${modWords.length}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateGlobalProgressUI() {
+            const knownTotal = WORDS_DATA.filter(w => appState.wordStatus[w.id] === 'known').length;
+            const pct = Math.round((knownTotal / WORDS_DATA.length) * 100);
+            const mobileBadge = document.getElementById('mobileProgressBadge');
+            const desktopBadge = document.getElementById('desktopProgressBadge');
+            if (mobileBadge) mobileBadge.textContent = `${pct}%`;
+            if (desktopBadge) desktopBadge.textContent = `${pct}%`;
+        }
+
+        // Модальное окно подтверждения сброса прогресса
+        function openResetModal() {
+            document.getElementById('resetConfirmModal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetConfirmModal').classList.add('hidden');
+        }
+
+        function confirmResetAllProgress() {
+            appState.wordStatus = {};
+            appState.lastExamResult = null;
+            saveState();
+            closeResetModal();
+            document.getElementById('examResultReport').classList.add('hidden');
+            document.getElementById('btnRetryExamMistakes').classList.add('hidden');
+            renderOverallDashboard();
+            renderModuleFilters();
+            renderFlashcard();
+            renderWordList();
+        }
+
+        // Инициализация приложения при загрузке
+        window.onload = function () {
+            loadState();
+            updateGlobalProgressUI();
+            renderModuleFilters();
+            renderFlashcard();
+            renderWordList();
+        };
+    </script>
+</body>
+</html>
